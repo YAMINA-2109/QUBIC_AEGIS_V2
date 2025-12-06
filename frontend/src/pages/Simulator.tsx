@@ -123,19 +123,23 @@ export function Simulator() {
               </label>
               <Select
                 value={selectedScenario}
-                onValueChange={setSelectedScenario}
+                onValueChange={(newValue) => {
+                  setSelectedScenario(newValue);
+                }}
               >
-                <SelectTrigger className="font-mono">
-                  <SelectValue />
+                <SelectTrigger className="font-mono w-full">
+                  <SelectValue>
+                    {selectedScenario.replace(/_/g, " ").toUpperCase()}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {SCENARIOS.map((scenario) => (
                     <SelectItem
                       key={scenario}
                       value={scenario}
-                      className="font-mono"
+                      className="font-mono cursor-pointer"
                     >
-                      {scenario.replace("_", " ").toUpperCase()}
+                      {scenario.replace(/_/g, " ").toUpperCase()}
                     </SelectItem>
                   ))}
                 </SelectContent>

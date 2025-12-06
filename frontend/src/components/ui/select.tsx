@@ -39,7 +39,7 @@ interface SelectTriggerProps extends React.ComponentProps<"button"> {
 }
 
 export function SelectTrigger({ className, children, ...props }: SelectTriggerProps) {
-  const { value, open, setOpen } = useSelectContext()
+  const { open, setOpen } = useSelectContext()
   const selectRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
@@ -51,7 +51,6 @@ export function SelectTrigger({ className, children, ...props }: SelectTriggerPr
       }
     }
 
-    // Use setTimeout to avoid immediate close on click
     const timeoutId = setTimeout(() => {
       document.addEventListener('mousedown', handleClickOutside)
     }, 0)
@@ -94,7 +93,10 @@ export function SelectTrigger({ className, children, ...props }: SelectTriggerPr
   )
 }
 
-export function SelectValue({ placeholder }: { placeholder?: string }) {
+export function SelectValue({ placeholder, children }: { placeholder?: string; children?: React.ReactNode }) {
+  if (children) {
+    return <>{children}</>
+  }
   const { value } = useSelectContext()
   return <span>{value || placeholder || "Select..."}</span>
 }
@@ -104,7 +106,7 @@ interface SelectContentProps {
 }
 
 export function SelectContent({ children }: SelectContentProps) {
-  const { open, setOpen } = useSelectContext()
+  const { open } = useSelectContext()
 
   if (!open) return null
 
@@ -112,6 +114,7 @@ export function SelectContent({ children }: SelectContentProps) {
     <div
       className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border border-border bg-background shadow-lg"
       onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.preventDefault()}
     >
       {children}
     </div>
@@ -126,12 +129,15 @@ interface SelectItemProps extends React.ComponentProps<"div"> {
 export function SelectItem({ className, value, children, ...props }: SelectItemProps) {
   const { onValueChange, value: selectedValue, setOpen } = useSelectContext()
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    // Always update the value, even if it's the same
     onValueChange(value)
-    // Close the select after selection with a small delay
-    setTimeout(() => {
-      setOpen(false)
-    }, 100)
+    
+    // Close the dropdown immediately
+    setOpen(false)
   }
 
   return (
@@ -140,10 +146,15 @@ export function SelectItem({ className, value, children, ...props }: SelectItemP
         "relative flex cursor-pointer select-none items-center rounded-sm px-3 py-2 text-sm",
         "hover:bg-accent hover:text-accent-foreground",
         "focus:bg-accent focus:text-accent-foreground",
+        "focus:outline-none",
         value === selectedValue && "bg-accent text-accent-foreground",
         className
       )}
       onClick={handleClick}
+      onMouseDown={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+      }}
       {...props}
     >
       {children}

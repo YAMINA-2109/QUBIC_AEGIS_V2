@@ -21,7 +21,7 @@ class Settings:
     # n8n Integration
     N8N_WEBHOOK_URL: Optional[str] = os.getenv(
         "N8N_WEBHOOK_URL",
-        "https://qubicaegis.app.n8n.cloud/webhook-test/bc96d8cb-43f8-4447-9fc9-d93abc18e4b0"
+        "https://qubicaegis.app.n8n.cloud/webhook-test/b4662347-9dd7-4934-8eab-33bbcee20ddc"
     )
     
     # AI Model Configuration

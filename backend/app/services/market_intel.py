@@ -2,7 +2,7 @@
 Market Intelligence Service
 Manages token-level intelligence and trading signals
 """
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from collections import deque, defaultdict
 from app.models.market import TokenStats, TokenSignal
@@ -171,3 +171,33 @@ class MarketIntelService:
         """Return the most recent N token signals."""
         return list(self.token_signals)[:limit]
 
+    def get_network_emotion(self) -> Dict[str, Any]:
+            """
+            Simulates the 'Emotional Network Agent' analysis.
+            Returns a score between 0 (Extreme Fear) and 100 (Extreme Greed).
+            """
+            import random
+            # Simulation basée sur les alertes récentes
+            # Si beaucoup d'alertes -> Fear (Peur)
+            recent_alerts = len(self.token_signals)
+            
+            base_score = 50
+            if recent_alerts > 5:
+                emotion_score = random.randint(10, 30) # Fear
+                status = "PANIC / HIGH STRESS"
+            elif recent_alerts > 2:
+                emotion_score = random.randint(30, 45) # Anxiety
+                status = "CAUTION"
+            else:
+                emotion_score = random.randint(55, 80) # Greed/Stable
+                status = "ACCUMULATION / EUPHORIA"
+                
+            return {
+                "score": emotion_score,
+                "status": status,
+                "indicators": {
+                    "balance_delta": "-12.5% (Whales exiting)",
+                    "volume_density": "High",
+                    "social_sentiment": "Bearish"
+                }
+            }

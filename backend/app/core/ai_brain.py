@@ -89,7 +89,7 @@ class AegisBrain:
                         messages=[{"role": "user", "content": "test"}],
                         max_tokens=5
                     )
-                    print(f"✅ AegisBrain initialized with Groq (model: {self.model})")
+                    print(f"AegisBrain initialized with Groq (model: {self.model})")
                 except Exception as test_error:
                     print(f"WARNING: Groq API test failed: {test_error}")
                     print("AI Brain will use fallback responses. Please check GROQ_API_KEY and network connection.")

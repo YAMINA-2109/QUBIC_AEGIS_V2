@@ -50,7 +50,7 @@ class AegisBrainLangChain:
                     temperature=0.5,
                     max_tokens=1000
                 )
-                print("✅ AegisBrainLangChain initialized with LangChain + Groq")
+                print("AegisBrainLangChain initialized with LangChain + Groq")
             except Exception as e:
                 print(f"WARNING: Could not initialize LangChain Groq client: {e}")
                 self.llm = None
