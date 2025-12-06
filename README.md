@@ -1,6 +1,6 @@
 # QUBIC AEGIS – AI Security & Market Intelligence Copilot
 
-[![Watch the Demo](aegis.jpg)](LIEN_VERS_TA_VIDEO_YOUTUBE)
+[![Watch the Demo](QUBIC_AEGIS/aegis.jpg)](LIEN_VERS_TA_VIDEO_YOUTUBE)
 
 > 📺 **Watch the 3-minute demo video** to see the Multi-Agent System in action.
 
