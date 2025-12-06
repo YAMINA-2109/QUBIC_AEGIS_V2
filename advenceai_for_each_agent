@@ -1,0 +1,126 @@
+### 🕵️‍♂️ 1. AGENT COLLECTOR (`agent_collector.py`)
+**Rôle : Les Yeux (Ingestion de données)**
+
+#### 🧠 Logique Métier (Qubic / QubicTrade)
+Qubic est une blockchain très rapide. Il y a des milliers de transactions par minute.
+*   **Sur QubicTrade**, il y a des ordres d'achat/vente.
+*   **Sur Nostromo**, il y a des gens qui envoient de l'argent pour financer un projet.
+Le Collector ne doit pas juste "lire" les données, il doit les **"Nettoyer et Étiqueter"**.
+
+#### ❌ Scénario SANS Aegis
+Une attaque "Dusting" a lieu. Un hacker envoie 0.000001 QUBIC à 10,000 wallets pour tracer leur identité.
+*   **Résultat :** Personne ne le remarque car c'est noyé dans la masse. Les wallets sont compromis.
+
+#### ✅ Scénario AVEC Aegis
+L'Agent Collector voit passer 10,000 transactions minuscules en 2 secondes.
+*   **Action :** Il ne les envoie pas une par une. Il les regroupe et met un tag : `PATTERN_DETECTED: DUSTING_BATCH`.
+
+#### 🚀(IA Upgrade)
+Dans `agent_collector.py`, au lieu de juste passer la donnée, ont demande à l'IA de **catégoriser l'intention** brute.
+---
+
+### ⚖️ 2. AGENT RISK ANALYST (`agent_risk_analyst.py`)
+**Rôle : Le Juge (Cerveau Principal)**
+
+#### 🧠 Logique Métier (Nostromo Launchpad)
+Nostromo permet de lancer des nouveaux tokens (comme une ICO). Le plus grand risque est le **"Rug Pull"** (Tirer le tapis).
+C'est quand les créateurs du projet, qui détiennent 40% des tokens, vendent TOUT d'un coup dès que le prix monte.
+
+#### ❌ Scénario SANS Aegis
+Les investisseurs mettent de l'argent sur le nouveau token "MOON". Le prix monte. Soudain, le créateur vend tout. Le prix tombe à 0. Tout le monde a perdu. C'est trop tard.
+
+#### ✅ Scénario AVEC Aegis
+L'Agent Risk Analyst surveille le wallet du créateur ("Deployer Wallet").
+Il voit que le créateur vient d'approuver un contrat pour vendre ses tokens.
+*   **Analyse IA :** "Le wallet créateur, qui était inactif depuis 30 jours, vient de déplacer 100% de ses fonds vers un Exchange. Probabilité de Rug Pull : 99%."
+*   **Action :** Alerte CRITIQUE immédiate.
+
+#### 🚀(IA Upgrade)
+C'est ici qu'il faut le meilleur Prompt.
+
+**Nouveau Prompt pour l'Agent (dans `analyze_transaction`) :**
+> "Tu es un auditeur financier expert en DeFi.
+> Contexte : Le wallet {wallet_id} est lié au projet Nostromo {token}.
+> Action : Il essaie de vendre {amount} tokens.
+> Analyse :
+> 1. Est-ce que cela représente plus de 5% de la liquidité totale ? (Si oui -> Crash imminent).
+> 2. Est-ce que ce wallet est censé être 'verrouillé' (vesting) ?
+> Réponds avec une explication psychologique : 'Le développeur semble paniquer' ou 'C'est une prise de profit malveillante'."
+
+---
+
+### 🔮 3. AGENT PREDICTOR (`agent_predictor.py`)
+**Rôle : L'Oracle (Prédiction du Futur)**
+
+#### 🧠 Logique Métier (Trading QubicTrade)
+Les traders veulent savoir ce qui va se passer dans 1 heure. Si une "Baleine" (Whale) commence à vendre un peu, est-ce qu'elle va continuer ?
+
+#### ❌ Scénario SANS Aegis
+La Baleine vend 10% de ses avoirs. Le prix baisse un peu. Les traders pensent "C'est bon, c'est fini, j'achète la baisse (Buy the dip)".
+En fait, la Baleine faisait juste une pause. Elle vend les 90% restants 10 minutes après. Les traders se font écraser.
+
+#### ✅ Scénario AVEC Aegis
+L'Agent Predictor analyse l'historique de cette Baleine. Il remarque qu'elle vend *toujours* en 3 vagues.
+*   **Prédiction :** "Attention. Vague 1 détectée. Selon le profil psychologique de ce wallet, la Vague 2 (plus grosse) arrive dans ~15 minutes. Risque : +90%."
+*   **Résultat :** Les traders Aegis ne bougent pas et attendent.
+
+#### 🚀(IA Upgrade)
+Utilise l'IA pour faire du **Profilage Comportemental**.
+
+**Prompt Logic :**
+> "Regarde l'historique des 10 dernières transactions de ce Wallet.
+> Cherche un pattern récurrent (ex: vend toujours à 14h00, ou vend toujours après une hausse de 5%).
+> Extrapole ce pattern pour prédire la prochaine action."
+
+---
+
+### 🎮 4. AGENT SIMULATOR (`agent_simulator.py`)
+**Rôle : Le Stratège (War Games)**
+
+#### 🧠 Logique Métier (Sécurité des Protocoles)
+Avant de lancer un token sur Nostromo, on veut savoir : "Et si quelqu'un attaque ?"
+C'est comme un crash-test pour voitures.
+
+#### ❌ Scénario SANS Aegis
+On lance le token. Un hacker trouve une faille "Flash Loan" (emprunter des millions, manipuler le prix, rembourser, garder le profit). Le protocole est vidé.
+
+#### ✅ Scénario AVEC Aegis
+Avant le lancement, le développeur utilise Aegis Simulator.
+*   **Commande :** "Simule une attaque Flash Loan sur ma pool de liquidité."
+*   **Aegis :** Exécute l'attaque virtuellement. "Résultat : J'ai réussi à vider votre pool en 2 transactions. Voici comment j'ai fait. Bouchez ce trou."
+
+#### (IA Upgrade)
+Fair de cet agent un "Hacker Éthique".
+
+**Prompt Logic (dans l'API `/api/simulate`) :**
+> "Agis comme un Black Hat Hacker d'élite. Ton but : détruire la liquidité du token {token}.
+> Génère un scénario d'attaque étape par étape (Step 1, Step 2, Step 3).
+> Pour chaque étape, estime les dégâts en QUBIC."
+
+---
+
+### 🤖 5. AGENT AUTOMATOR (`agent_automator.py`)
+**Rôle : Le Garde du Corps (Action)**
+
+#### 🧠 Logique Métier (EasyConnect)
+Savoir qu'il y a un risque, c'est bien. Agir, c'est mieux. EasyConnect permet de connecter Qubic au monde réel (Discord, Email, Smart Contracts).
+
+#### ❌ Scénario SANS Aegis
+Alerte reçue à 3h du matin : "Votre wallet est en train d'être vidé".
+Tu dors. Tu te réveilles à 8h. C'est vide.
+
+#### ✅ Scénario AVEC Aegis
+Alerte reçue à 3h du matin.
+*   **Agent Automator :** "Risque CRITIQUE détecté. L'utilisateur dort. J'active le protocole d'urgence via EasyConnect."
+*   **Action :** Envoie un signal à un Smart Contract qui "Gèle" temporairement les fonds ou envoie une notif stridente sur le téléphone via PagerDuty.
+
+#### 🚀 (IA Upgrade)
+L'IA doit choisir la **bonne réponse** selon la gravité.
+
+**Prompt Logic :**
+> "Situation : {risk_description}. Score : {score}.
+> Choisis la meilleure réponse parmi :
+> 1. 'LOG_ONLY' (Pour info)
+> 2. 'NOTIFY_USER' (Discord)
+> 3. 'EMERGENCY_SHUTDOWN' (Appel API critique)
+> Justifie ton choix."
