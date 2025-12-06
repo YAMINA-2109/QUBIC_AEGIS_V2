@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: oklch(0.09 0 0);
+  --foreground: oklch(0.95 0.02 166);
+  --card: oklch(0.12 0.015 260);
+  --card-foreground: oklch(0.95 0.02 166);
+  --popover: oklch(0.12 0.015 260);
+  --popover-foreground: oklch(0.95 0.02 166);
+  --primary: oklch(0.75 0.2 166);
+  --primary-foreground: oklch(0.09 0 0);
+  --secondary: oklch(0.18 0.02 260);
+  --secondary-foreground: oklch(0.95 0.02 166);
+  --muted: oklch(0.15 0.015 260);
+  --muted-foreground: oklch(0.55 0.02 166);
+  --accent: oklch(0.75 0.2 166);
+  --accent-foreground: oklch(0.09 0 0);
+  --destructive: oklch(0.65 0.25 25);
+  --destructive-foreground: oklch(0.09 0 0);
+  --border: oklch(0.2 0.02 260);
+  --input: oklch(0.2 0.02 260);
+  --ring: oklch(0.75 0.2 166);
+  --chart-1: oklch(0.75 0.2 166);
+  --chart-2: oklch(0.65 0.25 25);
+  --sidebar: oklch(0.1 0.01 260);
+  --sidebar-foreground: oklch(0.95 0.02 166);
+  --sidebar-primary: oklch(0.75 0.2 166);
+  --sidebar-primary-foreground: oklch(0.09 0 0);
+  --sidebar-accent: oklch(0.15 0.015 260);
+  --sidebar-accent-foreground: oklch(0.95 0.02 166);
+  --sidebar-border: oklch(0.2 0.02 260);
+  --sidebar-ring: oklch(0.75 0.2 166);
+  --neon-green: oklch(0.75 0.2 166);
+  --neon-red: oklch(0.65 0.25 25);
+  --cyber-glow: oklch(0.75 0.2 166 / 0.3);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green);
+  }
+  50% {
+    text-shadow: 0 0 15px var(--neon-green), 0 0 30px var(--neon-green), 0 0 45px var(--neon-green);
+  }
+}
+
+@keyframes glow-red {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red);
+  }
+  50% {
+    box-shadow: 0 0 30px var(--neon-red), 0 0 60px var(--neon-red);
+  }
+}
+
+.cyber-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.cyber-glow-red {
+  animation: glow-red 1.5s ease-in-out infinite;
+}
