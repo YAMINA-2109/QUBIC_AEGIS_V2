@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { useState, useEffect } from "react";
 import { AlertTriangle, Shield } from "lucide-react";
 import { cn } from "../lib/utils";
+import { apiUrl } from "../lib/api";
 
 interface DEFCONStatus {
   defcon_level: number;
@@ -17,7 +18,7 @@ export function DEFCONWidget() {
   useEffect(() => {
     const fetchDEFCON = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/defcon-status");
+        const response = await fetch(apiUrl("api/defcon-status"));
         if (response.ok) {
           const data = await response.json();
           setDefconStatus(data);

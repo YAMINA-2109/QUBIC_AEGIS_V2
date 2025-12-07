@@ -26,4 +26,3 @@ export function useConnection() {
   }
   return context;
 }
-

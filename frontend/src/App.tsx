@@ -14,6 +14,7 @@ import {
   useConnection,
 } from "./contexts/ConnectionContext";
 import { cn } from "./lib/utils";
+import { apiUrl } from "./lib/api";
 
 interface DEFCONStatus {
   defcon_level: number;
@@ -36,7 +37,7 @@ function AppContent() {
   useEffect(() => {
     const fetchDEFCON = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/defcon-status");
+        const response = await fetch(apiUrl("api/defcon-status"));
         if (response.ok) {
           const data = await response.json();
           setDefconStatus(data);

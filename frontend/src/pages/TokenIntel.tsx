@@ -5,11 +5,22 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Loader2, TrendingUp, TrendingDown, Minus, AlertCircle, Activity, Filter, Search, Download } from "lucide-react";
+import {
+  Loader2,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  AlertCircle,
+  Activity,
+  Filter,
+  Search,
+  Download,
+} from "lucide-react";
 import { cn } from "../lib/utils";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { SentimentGauge } from "../components/sentiment-gauge";
+import { apiUrl } from "../lib/api";
 
 interface TokenStats {
   symbol: string;
@@ -76,7 +87,8 @@ const getDemoMarketIntel = (): MarketIntelData => {
         signal_type: "WHALE_TRANSFER",
         risk_score: 78.5,
         risk_level: "HIGH" as const,
-        message: "Large QXALPHA transfer detected - potential market manipulation",
+        message:
+          "Large QXALPHA transfer detected - potential market manipulation",
       },
       {
         id: "sig_002",
@@ -93,16 +105,20 @@ const getDemoMarketIntel = (): MarketIntelData => {
 };
 
 export function TokenIntel() {
-  const [data, setData] = useState<MarketIntelData | null>(getDemoMarketIntel());
+  const [data, setData] = useState<MarketIntelData | null>(
+    getDemoMarketIntel()
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"risk" | "alerts" | "trend">("risk");
-  const [filterRisk, setFilterRisk] = useState<"all" | "high" | "critical">("all");
+  const [filterRisk, setFilterRisk] = useState<"all" | "high" | "critical">(
+    "all"
+  );
 
   const fetchMarketIntel = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/market-intel/overview");
+      const response = await fetch(apiUrl("api/market-intel/overview"));
       if (!response.ok) {
         throw new Error("Failed to fetch market intelligence");
       }
@@ -296,99 +312,111 @@ export function TokenIntel() {
         {loading && data && (
           <div className="mb-4 flex items-center justify-center">
             <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
-            <span className="text-xs font-mono text-muted-foreground">Updating...</span>
+            <span className="text-xs font-mono text-muted-foreground">
+              Updating...
+            </span>
           </div>
         )}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {data?.tokens
             .filter((token) => {
-              if (searchQuery && !token.symbol.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-              if (filterRisk === "high" && token.latest_risk_score < 70) return false;
-              if (filterRisk === "critical" && token.latest_risk_score < 90) return false;
+              if (
+                searchQuery &&
+                !token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+              )
+                return false;
+              if (filterRisk === "high" && token.latest_risk_score < 70)
+                return false;
+              if (filterRisk === "critical" && token.latest_risk_score < 90)
+                return false;
               return true;
             })
             .sort((a, b) => {
-              if (sortBy === "risk") return b.latest_risk_score - a.latest_risk_score;
+              if (sortBy === "risk")
+                return b.latest_risk_score - a.latest_risk_score;
               if (sortBy === "alerts") return b.alerts_24h - a.alerts_24h;
               if (sortBy === "trend") {
-                const trendOrder = { "UP": 3, "DOWN": 1, "STABLE": 2 };
+                const trendOrder = { UP: 3, DOWN: 1, STABLE: 2 };
                 return (trendOrder[b.trend] || 2) - (trendOrder[a.trend] || 2);
               }
               return 0;
             })
             .map((token) => (
-            <Card
-              key={token.symbol}
-              className={cn(
-                "border-2 transition-all duration-300 hover:border-primary/60",
-                getRiskBorderClass(token.latest_risk_score)
-              )}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-bold font-mono text-primary">
-                    {token.symbol}
-                  </CardTitle>
-                  {getTrendIcon(token.trend)}
-                </div>
-                {token.name && (
-                  <p className="text-xs text-muted-foreground font-mono">
-                    {token.name}
-                  </p>
+              <Card
+                key={token.symbol}
+                className={cn(
+                  "border-2 transition-all duration-300 hover:border-primary/60",
+                  getRiskBorderClass(token.latest_risk_score)
                 )}
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <p className="text-xs font-mono uppercase text-muted-foreground mb-1">
-                    Risk Score
-                  </p>
-                  <div className="flex items-baseline gap-2">
-                    <span
-                      className={cn(
-                        "text-2xl font-bold font-mono",
-                        getRiskColor(token.latest_risk_score)
-                      )}
-                    >
-                      {token.latest_risk_score.toFixed(1)}
-                    </span>
-                    <span className="text-xs text-muted-foreground font-mono">/100</span>
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-bold font-mono text-primary">
+                      {token.symbol}
+                    </CardTitle>
+                    {getTrendIcon(token.trend)}
                   </div>
-                </div>
-
-                <div className="flex items-center justify-between text-xs font-mono">
+                  {token.name && (
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {token.name}
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-3">
                   <div>
-                    <span className="text-muted-foreground">Trend:</span>
-                    <span
-                      className={cn(
-                        "ml-2 font-semibold",
-                        token.trend === "UP"
-                          ? "text-red-500"
-                          : token.trend === "DOWN"
-                          ? "text-primary"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      {token.trend}
-                    </span>
+                    <p className="text-xs font-mono uppercase text-muted-foreground mb-1">
+                      Risk Score
+                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <span
+                        className={cn(
+                          "text-2xl font-bold font-mono",
+                          getRiskColor(token.latest_risk_score)
+                        )}
+                      >
+                        {token.latest_risk_score.toFixed(1)}
+                      </span>
+                      <span className="text-xs text-muted-foreground font-mono">
+                        /100
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-muted-foreground">Alerts:</span>
-                    <span className="ml-2 font-semibold text-primary">
-                      {token.alerts_24h}
-                    </span>
-                  </div>
-                </div>
 
-                {token.risk_label && (
-                  <div className="pt-2 border-t border-border">
-                    <span className="text-xs font-mono text-muted-foreground">
-                      Status: <span className="text-primary">{token.risk_label}</span>
-                    </span>
+                  <div className="flex items-center justify-between text-xs font-mono">
+                    <div>
+                      <span className="text-muted-foreground">Trend:</span>
+                      <span
+                        className={cn(
+                          "ml-2 font-semibold",
+                          token.trend === "UP"
+                            ? "text-red-500"
+                            : token.trend === "DOWN"
+                            ? "text-primary"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {token.trend}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Alerts:</span>
+                      <span className="ml-2 font-semibold text-primary">
+                        {token.alerts_24h}
+                      </span>
+                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+
+                  {token.risk_label && (
+                    <div className="pt-2 border-t border-border">
+                      <span className="text-xs font-mono text-muted-foreground">
+                        Status:{" "}
+                        <span className="text-primary">{token.risk_label}</span>
+                      </span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
         </div>
       </div>
 
@@ -443,7 +471,9 @@ export function TokenIntel() {
                           {formatTime(signal.timestamp)}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="font-bold text-primary">{signal.token_symbol}</span>
+                          <span className="font-bold text-primary">
+                            {signal.token_symbol}
+                          </span>
                         </td>
                         <td className="px-4 py-3 text-muted-foreground">
                           {signal.signal_type.replace(/_/g, " ")}
@@ -473,4 +503,3 @@ export function TokenIntel() {
     </div>
   );
 }
-

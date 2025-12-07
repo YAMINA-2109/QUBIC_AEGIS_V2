@@ -7,6 +7,7 @@ import {
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { apiUrl } from "../lib/api";
 import {
   LineChart,
   Line,
@@ -47,9 +48,7 @@ export function Predictions() {
   useEffect(() => {
     const fetchGlobalPrediction = async () => {
       try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/predict?horizon=short_term"
-        );
+        const response = await fetch(apiUrl("api/predict?horizon=short_term"));
         const data = await response.json();
         setGlobalPrediction(data);
       } catch (err) {
@@ -73,7 +72,7 @@ export function Predictions() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/predict?wallet_id=${encodeURIComponent(
+        `${apiUrl("api/predict")}?wallet_id=${encodeURIComponent(
           walletId
         )}&horizon=short_term`
       );

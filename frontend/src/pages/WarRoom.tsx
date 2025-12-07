@@ -3,6 +3,7 @@ import { SimulationCard } from "../components/simulation-card";
 import { ActionNotification } from "../components/action-notification";
 import { TrendingDown, Skull, Zap } from "lucide-react";
 import { toast } from "sonner";
+import { apiUrl } from "../lib/api";
 import {
   Card,
   CardContent,
@@ -58,20 +59,17 @@ export function WarRoom() {
     });
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/trigger-automation",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            webhook_url: webhookUrl,
-            scenario_type: scenarioType,
-            message: `QUBIC AEGIS Alert: ${scenarioName} detected`,
-          }),
-        }
-      );
+      const response = await fetch(apiUrl("api/trigger-automation"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          webhook_url: webhookUrl,
+          scenario_type: scenarioType,
+          message: `QUBIC AEGIS Alert: ${scenarioName} detected`,
+        }),
+      });
 
       const data = await response.json();
 

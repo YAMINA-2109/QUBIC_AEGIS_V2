@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import ForceGraph2D from "react-force-graph-2d";
+import { apiUrl } from "../lib/api";
 
 interface Node {
   id: string;
@@ -121,7 +122,7 @@ export function WalletGraph({ maxNodes = 50 }: WalletGraphProps) {
     const fetchGraphData = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/wallet-graph?max_nodes=${maxNodes}`
+          `${apiUrl("api/wallet-graph")}?max_nodes=${maxNodes}`
         );
         const data: ApiGraphResponse = await response.json();
 
@@ -129,11 +130,15 @@ export function WalletGraph({ maxNodes = 50 }: WalletGraphProps) {
           // Use new format with edges instead of links
           setGraphData({
             nodes: data.nodes.map((node: ApiNode, idx: number) => {
-              const volume = node.value || (node.risk_score ? (node.risk_score * 10000) : 1);
+              const volume =
+                node.value || (node.risk_score ? node.risk_score * 10000 : 1);
               return {
                 id: node.id || `node-${idx}`,
                 label: node.label || node.id?.substring(0, 10) || `Node ${idx}`,
-                group: node.role || node.group || (volume > 500000 ? "high_risk" : "normal"),
+                group:
+                  node.role ||
+                  node.group ||
+                  (volume > 500000 ? "high_risk" : "normal"),
                 value: volume,
               };
             }),
@@ -155,7 +160,8 @@ export function WalletGraph({ maxNodes = 50 }: WalletGraphProps) {
           // Fallback to old format
           setGraphData({
             nodes: data.nodes.map((node: ApiNode, idx: number) => {
-              const volume = node.value || (node.risk_score ? (node.risk_score * 10000) : 1);
+              const volume =
+                node.value || (node.risk_score ? node.risk_score * 10000 : 1);
               return {
                 id: node.id || `node-${idx}`,
                 label: node.label || node.id || `Node ${idx}`,
@@ -231,15 +237,24 @@ export function WalletGraph({ maxNodes = 50 }: WalletGraphProps) {
         </div>
         <div className="mt-4 flex gap-4 text-xs text-muted-foreground font-mono">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#166534" }}></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: "#166534" }}
+            ></div>
             <span>Safe Wallet</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#ff0000" }}></div>
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: "#ff0000" }}
+            ></div>
             <span>High Risk Wallet</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 border" style={{ borderColor: "rgba(128, 128, 128, 0.2)" }}></div>
+            <div
+              className="w-3 h-3 border"
+              style={{ borderColor: "rgba(128, 128, 128, 0.2)" }}
+            ></div>
             <span>Connection</span>
           </div>
         </div>

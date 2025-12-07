@@ -4,6 +4,7 @@ import { AgentThoughts } from "../components/agent-thoughts";
 import { DefconBadge } from "../components/defcon-badge";
 import { AnalysisModal } from "../components/analysis-modal";
 import { useConnection } from "../contexts/ConnectionContext";
+import { apiUrl, wsUrl } from "../lib/api";
 import {
   Card,
   CardContent,
@@ -180,7 +181,7 @@ export function LiveMonitor() {
   useEffect(() => {
     const fetchDEFCON = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/defcon-status");
+        const response = await fetch(apiUrl("api/defcon-status"));
         if (response.ok) {
           const data = await response.json();
           setDefconStatus(data);
@@ -201,7 +202,7 @@ export function LiveMonitor() {
   useEffect(() => {
     const connectWebSocket = () => {
       try {
-        const ws = new WebSocket("ws://127.0.0.1:8000/ws/monitor");
+        const ws = new WebSocket(wsUrl("ws/monitor"));
 
         ws.onopen = () => {
           setIsConnected(true);

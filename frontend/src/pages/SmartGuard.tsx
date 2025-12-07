@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
+import { apiUrl } from "../lib/api";
 import {
   Shield,
   Loader2,
@@ -72,19 +73,16 @@ export function SmartGuard() {
     setSelectedTab(null);
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/smart-guard/audit",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: code.trim(),
-            language: language,
-          }),
-        }
-      );
+      const response = await fetch(apiUrl("api/smart-guard/audit"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: code.trim(),
+          language: language,
+        }),
+      });
 
       const data: AuditResult = await response.json();
 

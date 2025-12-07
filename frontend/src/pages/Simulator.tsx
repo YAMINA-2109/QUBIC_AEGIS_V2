@@ -7,6 +7,7 @@ import {
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { ScrollArea } from "../components/ui/scroll-area";
+import { apiUrl } from "../lib/api";
 import {
   Select,
   SelectContent,
@@ -53,7 +54,7 @@ export function Simulator() {
     setResult(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/simulate", {
+      const response = await fetch(apiUrl("api/simulate"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

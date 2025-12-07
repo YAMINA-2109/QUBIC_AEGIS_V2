@@ -9,6 +9,7 @@ import { Button } from "../components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useConnection } from "../contexts/ConnectionContext";
+import { apiUrl, wsUrl } from "../lib/api";
 
 interface Transaction {
   source_id: string;
@@ -84,7 +85,7 @@ export function Dashboard() {
   useEffect(() => {
     const connectWebSocket = () => {
       try {
-        const ws = new WebSocket("ws://localhost:8000/ws/monitor");
+        const ws = new WebSocket(wsUrl("ws/monitor"));
 
         ws.onopen = () => {
           setIsConnected(true);
@@ -239,24 +240,21 @@ export function Dashboard() {
     toast.loading(`Simulating ${scenarioName}...`, { id: toastId });
 
     try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/api/trigger-automation",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            webhook_url: webhookUrl,
-            scenario_type: scenarioType,
-            message: `QUBIC AEGIS Alert: ${scenarioName} detected\nRisk Score: ${riskScore.toFixed(
-              1
-            )}\nRisk Level: ${
-              riskScore > 80 ? "CRITICAL" : riskScore > 40 ? "HIGH" : "MEDIUM"
-            }`,
-          }),
-        }
-      );
+      const response = await fetch(apiUrl("api/trigger-automation"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          webhook_url: webhookUrl,
+          scenario_type: scenarioType,
+          message: `QUBIC AEGIS Alert: ${scenarioName} detected\nRisk Score: ${riskScore.toFixed(
+            1
+          )}\nRisk Level: ${
+            riskScore > 80 ? "CRITICAL" : riskScore > 40 ? "HIGH" : "MEDIUM"
+          }`,
+        }),
+      });
 
       const data = await response.json();
 

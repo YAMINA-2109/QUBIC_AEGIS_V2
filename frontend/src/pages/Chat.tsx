@@ -7,6 +7,7 @@ import {
 } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { ScrollArea } from "../components/ui/scroll-area";
+import { apiUrl } from "../lib/api";
 import {
   Bot,
   Send,
@@ -58,7 +59,7 @@ export function Chat() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/ask-aegis", {
+      const response = await fetch(apiUrl("api/ask-aegis"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -136,7 +137,7 @@ export function Chat() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/ask-aegis", {
+      const response = await fetch(apiUrl("api/ask-aegis"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

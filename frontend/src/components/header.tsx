@@ -1,6 +1,7 @@
 import { Badge } from "./ui/badge";
 import { useState, useEffect } from "react";
 import { cn } from "../lib/utils";
+import { apiUrl } from "../lib/api";
 
 interface HeaderProps {
   isConnected: boolean;
@@ -32,7 +33,7 @@ export function Header({
 
     const fetchDEFCON = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/defcon-status");
+        const response = await fetch(apiUrl("api/defcon-status"));
         if (response.ok) {
           const data = await response.json();
           setDefconStatus(data);
@@ -105,11 +106,7 @@ export function Header({
                 : "bg-red-500"
             )}
           />
-          {isUnderAttack
-            ? "UNDER ATTACK"
-            : isConnected
-            ? "ONLINE"
-            : "OFFLINE"}
+          {isUnderAttack ? "UNDER ATTACK" : isConnected ? "ONLINE" : "OFFLINE"}
         </Badge>
         <div className="text-xs font-mono text-muted-foreground">
           {new Date().toLocaleTimeString("en-US", { hour12: false })}

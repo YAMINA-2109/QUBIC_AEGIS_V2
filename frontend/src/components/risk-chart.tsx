@@ -1,23 +1,36 @@
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { apiUrl } from "../lib/api";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
 
 interface RiskHistoryData {
-  time: string
-  risk: number
+  time: string;
+  risk: number;
 }
 
 interface RiskChartProps {
-  data: RiskHistoryData[]
+  data: RiskHistoryData[];
 }
 
 export function RiskChart({ data }: RiskChartProps) {
-  const [prediction, setPrediction] = useState<{ forecast: number[]; predicted_risk: number } | null>(null);
+  const [prediction, setPrediction] = useState<{
+    forecast: number[];
+    predicted_risk: number;
+  } | null>(null);
 
   useEffect(() => {
     const fetchPrediction = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/predict?horizon=short_term");
+        const response = await fetch(apiUrl("api/predict?horizon=short_term"));
         const predData = await response.json();
         setPrediction(predData);
       } catch (error) {
@@ -32,21 +45,23 @@ export function RiskChart({ data }: RiskChartProps) {
 
   // Combine historical data with predictions
   const chartData = [...data];
-  
+
   // Add prediction points (forecast starts from last data point)
   if (prediction && chartData.length > 0) {
     const lastTime = chartData[chartData.length - 1].time;
     const forecastPoints = prediction.forecast?.slice(0, 20) || []; // Limit to 20 points
-    
+
     forecastPoints.forEach((predictedRisk: number, idx: number) => {
       // Generate future timestamps (assuming 2s intervals)
-      const minutes = Math.floor(idx * 2 / 60);
+      const minutes = Math.floor((idx * 2) / 60);
       const seconds = (idx * 2) % 60;
       const [hours, mins] = lastTime.split(":").map(Number);
       const newMins = mins + minutes;
       const newHours = newMins >= 60 ? hours + 1 : hours;
-      const futureTime = `${String(newHours % 24).padStart(2, "0")}:${String(newMins % 60).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-      
+      const futureTime = `${String(newHours % 24).padStart(2, "0")}:${String(
+        newMins % 60
+      ).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+
       chartData.push({
         time: futureTime,
         risk: predictedRisk,
@@ -66,7 +81,8 @@ export function RiskChart({ data }: RiskChartProps) {
           </CardTitle>
           {prediction && (
             <div className="text-xs text-muted-foreground">
-              Predicted: {prediction.predicted_risk.toFixed(1)} (Confidence: {prediction.confidence?.toFixed(0) || 0}%)
+              Predicted: {prediction.predicted_risk.toFixed(1)} (Confidence:{" "}
+              {prediction.confidence?.toFixed(0) || 0}%)
             </div>
           )}
         </div>
@@ -74,7 +90,10 @@ export function RiskChart({ data }: RiskChartProps) {
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255,255,255,0.1)"
+            />
             <XAxis
               dataKey="time"
               stroke="rgba(255,255,255,0.5)"
@@ -122,7 +141,11 @@ export function RiskChart({ data }: RiskChartProps) {
                 x={chartData[currentIndex]?.time}
                 stroke="rgba(255,255,255,0.5)"
                 strokeDasharray="3 3"
-                label={{ value: "Now", position: "top", fill: "rgba(255,255,255,0.7)" }}
+                label={{
+                  value: "Now",
+                  position: "top",
+                  fill: "rgba(255,255,255,0.7)",
+                }}
               />
             )}
           </LineChart>
@@ -139,6 +162,5 @@ export function RiskChart({ data }: RiskChartProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
-
