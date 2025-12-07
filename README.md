@@ -689,10 +689,16 @@ The six-agent cognitive architecture ensures extensibility. The adaptive DEFCON 
 
 ## License
 
-MIT License - See LICENSE file for details
+Proprietary – Usage is restricted to Qubic Aegis Team and Qubic Foundation.
+
+## Team
+
+- **[Atmaoui Yamina](https://www.linkedin.com/in/yamina-atmaoui/)**
+- **[Brenda Tidjet](https://www.linkedin.com/in/brenda-tidjet/)**
+- **[Khireddine Tidjet](https://www.linkedin.com/in/khireddine-tidjet/)**
+- **[Ahmed Yassin](https://www.linkedin.com/in/ahmed-yassin-052209374/)**
 
 ---
-
 ## Contact & Contributions
 
 Built for the **Qubic Hackathon** | Version 2.1.0
