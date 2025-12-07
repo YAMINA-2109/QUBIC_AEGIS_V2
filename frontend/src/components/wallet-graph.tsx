@@ -128,12 +128,15 @@ export function WalletGraph({ maxNodes = 50 }: WalletGraphProps) {
         if (data.nodes && data.edges && data.nodes.length > 0) {
           // Use new format with edges instead of links
           setGraphData({
-            nodes: data.nodes.map((node: ApiNode, idx: number) => ({
-              id: node.id || `node-${idx}`,
-              label: node.label || node.id?.substring(0, 10) || `Node ${idx}`,
-              group: node.role || node.group || "normal",
-              value: node.value || 1,
-            })),
+            nodes: data.nodes.map((node: ApiNode, idx: number) => {
+              const volume = node.value || (node.risk_score ? (node.risk_score * 10000) : 1);
+              return {
+                id: node.id || `node-${idx}`,
+                label: node.label || node.id?.substring(0, 10) || `Node ${idx}`,
+                group: node.role || node.group || (volume > 500000 ? "high_risk" : "normal"),
+                value: volume,
+              };
+            }),
             links: data.edges.map((edge: ApiEdge) => ({
               source: edge.source,
               target: edge.target,
@@ -151,12 +154,15 @@ export function WalletGraph({ maxNodes = 50 }: WalletGraphProps) {
         } else if (data.nodes && data.links && data.nodes.length > 0) {
           // Fallback to old format
           setGraphData({
-            nodes: data.nodes.map((node: ApiNode, idx: number) => ({
-              id: node.id || `node-${idx}`,
-              label: node.label || node.id || `Node ${idx}`,
-              group: node.group || "normal",
-              value: node.value || 1,
-            })),
+            nodes: data.nodes.map((node: ApiNode, idx: number) => {
+              const volume = node.value || (node.risk_score ? (node.risk_score * 10000) : 1);
+              return {
+                id: node.id || `node-${idx}`,
+                label: node.label || node.id || `Node ${idx}`,
+                group: node.group || (volume > 500000 ? "high_risk" : "normal"),
+                value: volume,
+              };
+            }),
             links: data.links.map((link: ApiLink) => ({
               source:
                 typeof link.source === "number"
@@ -203,45 +209,37 @@ export function WalletGraph({ maxNodes = 50 }: WalletGraphProps) {
               ).toLocaleString()}`
             }
             nodeColor={(node: GraphNode) => {
-              if (node.group === "high_risk") return "#ff3232"; // Red for high risk
-              return "#00ff41"; // Green for normal
+              // High Risk = Rouge vif néon
+              if (node.group === "high_risk") return "#ff0000";
+              // Safe = Vert foncé discret
+              return "#166534";
             }}
-            linkColor={() => "rgba(0, 255, 65, 0.3)"}
-            linkWidth={(link: GraphLink) => Math.sqrt(link.value || 1) * 2}
-            nodeCanvasObject={(
-              node: GraphNode,
-              ctx: CanvasRenderingContext2D,
-              globalScale: number
-            ) => {
-              const label = node.label || node.id;
-              const fontSize = 12 / globalScale;
-              ctx.font = `${fontSize}px monospace`;
-              ctx.textAlign = "center";
-              ctx.textBaseline = "middle";
-              ctx.fillStyle =
-                node.group === "high_risk" ? "#ff3232" : "#00ff41";
-              ctx.fillText(
-                label,
-                node.x || 0,
-                (node.y || 0) + 10 / globalScale
-              );
+            linkColor={() => "rgba(128, 128, 128, 0.2)"}
+            linkWidth={(link: GraphLink) => 1}
+            nodeCanvasObject={() => {
+              // Ne pas afficher les labels par défaut (cachés)
             }}
-            nodeRelSize={6}
+            nodeVal={(node: GraphNode) => {
+              // Whale (gros volume) = 3x plus gros
+              const baseSize = 6;
+              const isWhale = (node.value || 0) > 500000;
+              return isWhale ? baseSize * 3 : baseSize;
+            }}
             cooldownTicks={100}
             backgroundColor="#000000"
           />
         </div>
-        <div className="mt-4 flex gap-4 text-xs text-muted-foreground">
+        <div className="mt-4 flex gap-4 text-xs text-muted-foreground font-mono">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-neon-green"></div>
-            <span>Normal Wallet</span>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#166534" }}></div>
+            <span>Safe Wallet</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-destructive"></div>
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: "#ff0000" }}></div>
             <span>High Risk Wallet</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 border border-neon-green/50"></div>
+            <div className="w-3 h-3 border" style={{ borderColor: "rgba(128, 128, 128, 0.2)" }}></div>
             <span>Connection</span>
           </div>
         </div>

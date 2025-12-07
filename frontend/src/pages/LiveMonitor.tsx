@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { TransactionFeed } from "../components/transaction-feed";
 import { AgentThoughts } from "../components/agent-thoughts";
 import { DefconBadge } from "../components/defcon-badge";
+import { AnalysisModal } from "../components/analysis-modal";
 import { useConnection } from "../contexts/ConnectionContext";
 import {
   Card,
@@ -77,76 +78,61 @@ const getDemoTransactions = (): RiskAnalysis[] => {
       transaction: {
         source_id: "QUUUVV...XYZA",
         dest_id: "QUVVVW...BCDE",
-        amount: 125000,
-        tick: 15234,
-        type: "whale_transfer",
-        timestamp: new Date(now.getTime() - 5000).toISOString(),
+        amount: 450000,
+        tick: 8923485,
+        type: "whale_dump",
+        timestamp: new Date(now.getTime() - 1000).toISOString(),
         token_symbol: "QXALPHA",
-        source: "RPC" as const,
+        source: "SIMULATION" as const,
       },
-      risk_score: 85.5,
-      risk_level: "HIGH",
-      explanation: "Large QXALPHA transfer detected from unknown whale wallet",
+      risk_score: 95.5,
+      risk_level: "CRITICAL",
+      explanation: "Whale dump detected on QXALPHA",
     },
     {
       transaction: {
         source_id: "QUVXYW...FGHI",
         dest_id: "QUVXYZ...JKLM",
-        amount: 45000,
-        tick: 15233,
+        amount: 1200,
+        tick: 8923484,
         type: "transfer",
-        timestamp: new Date(now.getTime() - 12000).toISOString(),
-        token_symbol: "QX",
+        timestamp: new Date(now.getTime() - 2000).toISOString(),
+        token_symbol: "QUBIC",
         source: "RPC" as const,
       },
-      risk_score: 42.3,
-      risk_level: "MEDIUM",
-      explanation: "Moderate volume transaction with pattern analysis",
+      risk_score: 12.0,
+      risk_level: "LOW",
+      explanation: "Normal transfer",
     },
     {
       transaction: {
         source_id: "QUVABC...NOPQ",
         dest_id: "QUVDEF...RSTU",
-        amount: 250000,
-        tick: 15232,
-        type: "whale_dump",
-        timestamp: new Date(now.getTime() - 18000).toISOString(),
-        token_symbol: "QXALPHA",
-        source: "SIMULATION" as const,
+        amount: 5600,
+        tick: 8923483,
+        type: "transfer",
+        timestamp: new Date(now.getTime() - 5000).toISOString(),
+        token_symbol: "QX",
+        source: "RPC" as const,
       },
-      risk_score: 92.8,
-      risk_level: "CRITICAL",
-      explanation: "Simulated whale dump scenario - liquidity impact detected",
+      risk_score: 15.5,
+      risk_level: "LOW",
+      explanation: "Normal transfer",
     },
     {
       transaction: {
         source_id: "QUVGHI...VWXY",
         dest_id: "QUVJKL...ZABC",
-        amount: 12500,
-        tick: 15231,
-        type: "transfer",
-        timestamp: new Date(now.getTime() - 25000).toISOString(),
-        token_symbol: "QX",
+        amount: 125000,
+        tick: 8923482,
+        type: "whale_transfer",
+        timestamp: new Date(now.getTime() - 8000).toISOString(),
+        token_symbol: "QXALPHA",
         source: "RPC" as const,
       },
-      risk_score: 18.2,
-      risk_level: "LOW",
-      explanation: "Normal transaction volume within expected parameters",
-    },
-    {
-      transaction: {
-        source_id: "QUVMNO...DEFG",
-        dest_id: "QUVPQR...HIJK",
-        amount: 89000,
-        tick: 15230,
-        type: "wash_trading",
-        timestamp: new Date(now.getTime() - 32000).toISOString(),
-        token_symbol: "QXALPHA",
-        source: "SIMULATION" as const,
-      },
-      risk_score: 78.5,
+      risk_score: 78.2,
       risk_level: "HIGH",
-      explanation: "Potential wash trading pattern detected in QXALPHA market",
+      explanation: "Large QXALPHA transfer detected",
     },
   ];
 };
@@ -178,6 +164,10 @@ export function LiveMonitor() {
   const [defconStatus, setDefconStatus] = useState<DEFCONStatus | null>(
     getDemoDEFCONStatus()
   );
+  const [selectedAnalysis, setSelectedAnalysis] = useState<RiskAnalysis | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const logsEndRef = useRef<HTMLDivElement | null>(null);
 
@@ -383,14 +373,39 @@ export function LiveMonitor() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Transaction Feed - Takes 2 columns */}
         <div className="lg:col-span-2">
-          <TransactionFeed transactions={transactions} />
+          <TransactionFeed
+            transactions={transactions}
+            onTransactionClick={(tx) => {
+              setSelectedAnalysis(tx);
+              setIsModalOpen(true);
+            }}
+          />
         </div>
 
         {/* Agent Logs - Takes 1 column */}
         <div className="lg:col-span-1">
-          <AgentThoughts logs={logs} />
+          <AgentThoughts
+            logs={logs}
+            transactions={transactions}
+            onLogClick={(analysis) => {
+              if (analysis) {
+                setSelectedAnalysis(analysis);
+                setIsModalOpen(true);
+              }
+            }}
+          />
         </div>
       </div>
+
+      {/* Neural Insight Modal */}
+      <AnalysisModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedAnalysis(null);
+        }}
+        analysis={selectedAnalysis}
+      />
     </div>
   );
 }

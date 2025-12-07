@@ -96,8 +96,20 @@ class MultiAgentOrchestrator:
             automation_result = await self.automator.decide_and_execute(event)
 
         # FINAL REPORT
+        # Convert transaction to dict and ensure timestamp is ISO string
+        tx_dict = transaction.model_dump() if hasattr(transaction, "model_dump") else transaction.dict()
+        
+        # Ensure timestamp is ISO string format
+        if tx_dict.get("timestamp"):
+            if hasattr(tx_dict["timestamp"], "isoformat"):
+                tx_dict["timestamp"] = tx_dict["timestamp"].isoformat()
+            elif isinstance(tx_dict["timestamp"], str):
+                pass  # Already a string
+        else:
+            tx_dict["timestamp"] = datetime.utcnow().isoformat()
+        
         return {
-            "transaction": transaction.dict(),
+            "transaction": tx_dict,
             "risk_analysis": risk_analysis,
             "prediction": prediction,
             "automation": automation_result,
@@ -119,8 +131,19 @@ class MultiAgentOrchestrator:
         elif attack_count >= 3: self.current_defcon_level = 3
         else: self.current_defcon_level = 5
         
+        # Adjust alert threshold based on DEFCON level
+        if self.current_defcon_level == 1:
+            self.adaptive_alert_threshold = 50.0
+        elif self.current_defcon_level == 2:
+            self.adaptive_alert_threshold = 60.0
+        elif self.current_defcon_level == 3:
+            self.adaptive_alert_threshold = 70.0
+        else:
+            self.adaptive_alert_threshold = 80.0
+        
         return {
             "defcon_level": self.current_defcon_level,
+            "alert_threshold": self.adaptive_alert_threshold,
             "attacks_last_minute": attack_count,
             "status": "MAXIMUM ALERT" if self.current_defcon_level == 1 else "NORMAL"
         }
@@ -162,16 +185,35 @@ class MultiAgentOrchestrator:
                 self.market_intel.add_signal(signal)
 
     # --- Helper methods for API Routes ---
+    def _serialize_model(self, model):
+        """Helper to serialize Pydantic models to dict with proper date formatting"""
+        if model is None:
+            return None
+        if hasattr(model, "model_dump"):
+            data = model.model_dump()
+        elif hasattr(model, "dict"):
+            data = model.dict()
+        else:
+            data = dict(model)
+        
+        # Convert datetime objects to ISO strings
+        for key, value in data.items():
+            if isinstance(value, datetime):
+                data[key] = value.isoformat()
+        
+        return data
+    
     def get_tokens_overview(self):
-        return [t.dict() for t in self.market_intel.get_tokens_overview()]
+        tokens = self.market_intel.get_tokens_overview()
+        return [self._serialize_model(t) for t in tokens]
         
     def get_recent_signals(self, limit=20):
-        return [s.dict() for s in self.market_intel.get_recent_signals(limit)]
+        signals = self.market_intel.get_recent_signals(limit)
+        return [self._serialize_model(s) for s in signals]
         
     def get_token_detail(self, symbol: str):
-        # C'est la méthode qui manquait !
         token = self.market_intel.get_token_by_symbol(symbol)
-        return token.dict() if token else None
+        return self._serialize_model(token) if token else None
         
     def get_wallet_graph_data(self, max_nodes=50):
         nodes = []

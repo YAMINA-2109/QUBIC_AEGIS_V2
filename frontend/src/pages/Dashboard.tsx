@@ -222,7 +222,7 @@ export function Dashboard() {
     }
 
     const webhookUrl =
-      "https://qubicaegis.app.n8n.cloud/webhook-test/b4662347-9dd7-4934-8eab-33bbcee20ddc";
+      "https://qubicaegis.app.n8n.cloud/webhook/b4662347-9dd7-4934-8eab-33bbcee20ddc";
 
     setActiveScenario(scenarioType);
 

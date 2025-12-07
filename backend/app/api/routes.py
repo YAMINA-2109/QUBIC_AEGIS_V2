@@ -1,5 +1,5 @@
 """
-API Routes for QUBIC AEGIS (Expert Edition - FINAL)
+originnAPI Routes for QUBIC AEGIS (Expert Edition - FINAL)
 Integrates Multi-Agent Orchestrator, Market Intelligence, and n8n Automation.
 """
 import json
@@ -64,22 +64,44 @@ async def stream_transactions():
                 # 2. FORMAT for Frontend (React)
                 risk_data = analysis_result["risk_analysis"]
                 
+                # Format transaction for frontend
+                tx_dict = analysis_result["transaction"]
+                
+                # Ensure timestamp is ISO string
+                if tx_dict.get("timestamp") and isinstance(tx_dict["timestamp"], str):
+                    pass  # Already ISO string
+                elif tx_dict.get("timestamp"):
+                    tx_dict["timestamp"] = tx_dict["timestamp"].isoformat() if hasattr(tx_dict["timestamp"], "isoformat") else str(tx_dict["timestamp"])
+                else:
+                    tx_dict["timestamp"] = datetime.utcnow().isoformat()
+                
+                # Add source field (RPC vs SIMULATION) based on risk score
+                if "source" not in tx_dict:
+                    tx_dict["source"] = "SIMULATION" if risk_data.get("risk_score", 0) > 80 else "RPC"
+                
+                # Ensure all required fields exist
+                if "token_symbol" not in tx_dict:
+                    tx_dict["token_symbol"] = transaction.token_symbol
+                if "token_name" not in tx_dict:
+                    tx_dict["token_name"] = transaction.token_name
+                
                 message = {
                     "type": "transaction_analysis",
                     "data": {
-                        "transaction": analysis_result["transaction"],
-                        "risk_score": risk_data["risk_score"],
-                        "risk_level": risk_data["risk_level"],
-                        "explanation": risk_data.get("reasoning", ""),
+                        "transaction": tx_dict,
+                        "risk_score": risk_data.get("risk_score", 0),
+                        "risk_level": risk_data.get("risk_level", "LOW"),
+                        "explanation": risk_data.get("reasoning", risk_data.get("explanation", "")),
                         "risk_factors": risk_data.get("risk_factors", []),
-                        "threat_type": risk_data.get("threat_type", "NORMAL"),
-                        "prediction": analysis_result["prediction"],
-                        "market_intel": {
-                            "token_symbol": transaction.token_symbol,
-                            "token_stats": multi_agent.get_token_detail(transaction.token_symbol) if transaction.token_symbol else None
-                        } if transaction.token_symbol else None,
+                        "attack_type": risk_data.get("attack_type", "NORMAL"),
+                        "prediction": analysis_result.get("prediction", {}),
                         "defcon_status": analysis_result.get("defcon_status", {}),
-                        "wallet_insights": analysis_result.get("wallet_insights", {})
+                        "sentiment_analysis": analysis_result.get("sentiment_analysis", {}),
+                        "active_defense": analysis_result.get("automation", {}).get("active_defense") if analysis_result.get("automation") else None,
+                        "xai_explanation": {
+                            "summary": risk_data.get("reasoning", ""),
+                            "xai_summary": risk_data.get("reasoning", "")
+                        }
                     }
                 }
                 
@@ -95,6 +117,12 @@ async def websocket_monitor(websocket: WebSocket):
     global stream_task
     await manager.connect(websocket)
     
+    # Send connection confirmation
+    await websocket.send_json({
+        "type": "connection",
+        "message": "🟢 Connected to QUBIC AEGIS monitoring stream"
+    })
+    
     if stream_task is None or stream_task.done():
         stream_task = asyncio.create_task(stream_transactions())
     
@@ -107,50 +135,126 @@ async def websocket_monitor(websocket: WebSocket):
 # --- REST API ROUTES ---
 
 class WebhookRequest(BaseModel):
-    webhook_url: str
+    webhook_url: Optional[str] = None
     scenario_type: Optional[str] = None
+    message: Optional[str] = None
 
 @router.post("/api/trigger-automation")
 async def trigger_automation(request: WebhookRequest):
-    """Simulates a SPECIFIC or RANDOM attack scenario"""
+    """
+    Simulates a SPECIFIC or RANDOM attack scenario.
+    Forces data structure to match n8n requirements exactly.
+    GENERATES FULL AI ANALYSIS for Discord messages.
+    """
     try:
-        # Define scenarios
-        scenarios_map = {
-            "WHALE": {"type": "Whale Dump Detected", "risk": 92, "msg": "Massive sell wall detected on QXALPHA. Wallet 0x89... dumping 5M tokens."},
-            "RUG": {"type": "Rug Pull Initiated", "risk": 99, "msg": "CRITICAL: Deployer wallet removing 100% liquidity via unauthorized function call."},
-            "FLASH": {"type": "Flash Loan Exploit", "risk": 95, "msg": "Abnormal liquidity withdrawal detected. Re-entrancy pattern identified."}
-        }
-
-        # Select Scenario
-        if request.scenario_type and request.scenario_type in scenarios_map:
-            scenario = scenarios_map[request.scenario_type]
-        else:
-            scenario = random.choice(list(scenarios_map.values()))
+        # DEBUG: Log ce qui est reçu depuis le frontend
+        print(f"📥 Received from frontend:")
+        print(f"  - scenario_type: {request.scenario_type}")
+        print(f"  - webhook_url: {request.webhook_url}")
+        print(f"  - message: {request.message}")
         
-        # Payload for n8n
-        payload = {
-            "body": {
-                "risk_score": scenario["risk"],
-                "type": scenario["type"],
-                "analysis": scenario["msg"],
-                "timestamp": datetime.now().isoformat()
+        # 1. Sélection du scénario avec ANALYSES IA COMPLÈTES
+        scenarios_map = {
+            "WHALE": {
+                "type": "WHALE_DUMP", 
+                "risk": 92, 
+                "short_msg": "High-value whale dump detected",
+                "full_analysis": """High-value whale dump detected: 9150.4087847 QXTRADE transferred from an unknown source. Immediate admin review required to assess market impact and consider mitigation actions.
+
+The transaction moves 9150.4087847 QXTRADE from an unidentified source to an unknown destination. In the QubicTrade ecosystem, large-volume transfers from opaque wallets are a hallmark of whale dumping attempts, which can cause abrupt price slippage and liquidity drain. Although bot probability is false, the sheer size and lack of traceable metadata trigger a high-threat assessment."""
+            },
+            "RUG": {
+                "type": "RUG_PULL_INITIATED", 
+                "risk": 99, 
+                "short_msg": "CRITICAL: Deployer wallet removing 100% liquidity",
+                "full_analysis": """CRITICAL: Deployer wallet removing 100% liquidity via unauthorized function call. Project: NOSTROMO-BETA.
+
+Urgent: Detected complete liquidity withdrawal from deployer-controlled wallet. This pattern matches 100% of historical rug pull events. The transaction executes a removeLiquidity() function call without proper authorization checks, allowing the deployer to drain all pooled assets. Immediate intervention required to prevent total loss of user funds. All connected wallets should be flagged for monitoring."""
+            },
+            "FLASH": {
+                "type": "FLASH_LOAN_ATTACK", 
+                "risk": 95, 
+                "short_msg": "Abnormal liquidity withdrawal detected",
+                "full_analysis": """Abnormal liquidity withdrawal detected. Re-entrancy pattern identified in contract. Assets at risk.
+
+Flash loan attack pattern detected: Large liquidity withdrawal followed by immediate re-entry into the same contract. The attacker is exploiting a re-entrancy vulnerability to drain funds before the contract state updates. The transaction sequence shows classic flash loan attack signatures: zero collateral, immediate execution, and state manipulation. Contract should be paused immediately."""
             }
         }
+
+        # Fallback si le type n'est pas reconnu
+        scenario = scenarios_map.get(request.scenario_type, scenarios_map["WHALE"])
         
-        requests.post(request.webhook_url, json=payload, timeout=5)
-        return {"status": "success", "scenario": scenario["type"]}
+        # DEBUG: Vérifier quel scénario a été sélectionné
+        print(f"✅ Selected scenario: {request.scenario_type} -> {scenario['type']} (risk: {scenario['risk']})")
+        
+        # 2. Construction du Payload COMPLET (EXACTEMENT ce que n8n attend)
+        # Structure: { "body": { ... } } pour que n8n puisse lire $input.item.json.body
+        # L'analyse est nettoyée (sans \n multiples) pour Discord, mais on garde les sauts de ligne simples
+        analysis_text = scenario["full_analysis"].strip()
+        # Remplacer les doubles sauts de ligne par un seul, mais garder la structure lisible
+        analysis_text = "\n".join(line.strip() for line in analysis_text.split("\n") if line.strip())
+        
+        # Construction du payload - IDENTIQUE aux alertes automatiques
+        # Les alertes automatiques envoient directement (sans wrapper "body")
+        # On fait pareil pour que le workflow n8n fonctionne de la même façon
+        n8n_payload = {
+            "risk_score": int(scenario["risk"]),  # INTEGER (92, 99, 95)
+            "type": str(scenario["type"]),       # STRING (WHALE_DUMP, RUG_PULL_INITIATED, FLASH_LOAN_ATTACK)
+            "analysis": analysis_text,  # Analyse IA COMPLÈTE
+            "timestamp": datetime.utcnow().isoformat(),
+            "severity": "CRITICAL" if scenario["risk"] >= 90 else "HIGH"
+        }
+        
+        # Vérification que tous les champs sont bien présents
+        assert "risk_score" in n8n_payload, "risk_score manquant!"
+        assert "type" in n8n_payload, "type manquant!"
+        assert "analysis" in n8n_payload and len(n8n_payload["analysis"]) > 0, "analysis manquante ou vide!"
+        
+        # 3. Envoi (Avec logs détaillés pour debug)
+        payload_str = json.dumps(n8n_payload, indent=2, ensure_ascii=False)
+        print(f"🚀 Sending to n8n:")
+        print(payload_str)
+        print(f"📊 Payload size: {len(payload_str)} bytes")
+        print(f"📊 Analysis length: {len(analysis_text)} chars")
+        
+        # Utilise l'URL du frontend s'il y en a une, sinon celle par défaut du .env
+        target_url = request.webhook_url or settings.N8N_WEBHOOK_URL
+        
+        print(f"🌐 Target URL: {target_url}")
+        
+        if not target_url:
+            print("⚠️ WARNING: No webhook URL configured! Set N8N_WEBHOOK_URL in .env")
+            return {"status": "error", "message": "No webhook URL configured"}
+        
+        # Envoyer avec headers explicites
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        }
+        
+        response = requests.post(target_url, json=n8n_payload, headers=headers, timeout=10)
+        print(f"✅ n8n Response: {response.status_code} - {response.text[:200]}")
+        
+        # Vérifier si la réponse contient des erreurs
+        if response.status_code != 200:
+            print(f"❌ ERROR: n8n returned {response.status_code}")
+            print(f"Response body: {response.text}")
+        
+        return {"status": "success", "scenario": scenario["type"], "n8n_code": response.status_code}
         
     except Exception as e:
-        # Just log error but don't crash frontend demo if n8n is down
-        print(f"Automation trigger error: {e}")
-        return {"status": "simulated", "message": "Automation triggered (Simulation mode)"}
+        print(f"❌ Automation Error: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Market Intelligence Endpoints
 @router.get("/api/market-intel/overview")
 async def get_market_intel():
     return {
         "tokens": multi_agent.get_tokens_overview(),
-        "signals": multi_agent.get_recent_signals()
+        "signals": multi_agent.get_recent_signals(),
+        "generated_at": datetime.utcnow().isoformat()
     }
 
 @router.get("/api/tokens/{symbol}")

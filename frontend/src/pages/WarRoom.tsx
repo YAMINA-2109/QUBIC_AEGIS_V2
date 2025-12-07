@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { SimulationCard } from "../components/simulation-card";
+import { ActionNotification } from "../components/action-notification";
 import { TrendingDown, Skull, Zap } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -11,9 +12,14 @@ import {
 
 export function WarRoom() {
   const [activeScenario, setActiveScenario] = useState<string | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationData, setNotificationData] = useState<{
+    threatType: string;
+    riskScore: number;
+  } | null>(null);
 
   const webhookUrl =
-    "https://qubicaegis.app.n8n.cloud/webhook-test/b4662347-9dd7-4934-8eab-33bbcee20ddc";
+    "https://qubicaegis.app.n8n.cloud/webhook/b4662347-9dd7-4934-8eab-33bbcee20ddc";
 
   const handleSimulation = async (scenarioType: string) => {
     if (activeScenario !== null) {
@@ -28,8 +34,23 @@ export function WarRoom() {
       FLASH: "Flash Loan Attack",
     };
 
+    const scenarioTypes = {
+      WHALE: "WHALE_DUMP",
+      RUG: "RUG_PULL_INITIATED",
+      FLASH: "FLASH_LOAN_ATTACK",
+    };
+
+    const riskScores = {
+      WHALE: 92,
+      RUG: 99,
+      FLASH: 95,
+    };
+
     const scenarioName =
       scenarioNames[scenarioType as keyof typeof scenarioNames] || "threat";
+    const threatType =
+      scenarioTypes[scenarioType as keyof typeof scenarioTypes] || "UNKNOWN";
+    const riskScore = riskScores[scenarioType as keyof typeof riskScores] || 90;
     const toastId = `warroom-${scenarioType}`;
 
     toast.loading(`Injecting ${scenarioName} into network stream...`, {
@@ -55,6 +76,10 @@ export function WarRoom() {
       const data = await response.json();
 
       if (response.ok) {
+        // Show the big notification
+        setNotificationData({ threatType, riskScore });
+        setShowNotification(true);
+
         toast.success(
           `✅ ${scenarioName} injected! Attack in network stream.`,
           {
@@ -84,6 +109,19 @@ export function WarRoom() {
 
   return (
     <div className="flex-1 overflow-y-auto p-6 bg-[#050505]">
+      {/* Action Notification */}
+      {showNotification && notificationData && (
+        <ActionNotification
+          isVisible={showNotification}
+          threatType={notificationData.threatType}
+          riskScore={notificationData.riskScore}
+          onClose={() => {
+            setShowNotification(false);
+            setNotificationData(null);
+          }}
+        />
+      )}
+
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight font-mono text-[#00ff41] mb-2">

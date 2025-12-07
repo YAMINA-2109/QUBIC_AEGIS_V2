@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ScrollArea } from "./ui/scroll-area";
+import { cn } from "../lib/utils";
 
 interface Transaction {
   source_id: string;
@@ -21,6 +22,7 @@ interface RiskAnalysis {
 
 interface TransactionFeedProps {
   transactions: RiskAnalysis[];
+  onTransactionClick?: (transaction: RiskAnalysis) => void;
 }
 
 const formatTime = (timestamp: string | null | undefined): string => {
@@ -39,7 +41,10 @@ const formatTime = (timestamp: string | null | undefined): string => {
   }
 };
 
-export function TransactionFeed({ transactions }: TransactionFeedProps) {
+export function TransactionFeed({
+  transactions,
+  onTransactionClick,
+}: TransactionFeedProps) {
   return (
     <Card className="border-primary/30">
       <CardHeader>
@@ -74,7 +79,13 @@ export function TransactionFeed({ transactions }: TransactionFeedProps) {
                 return (
                   <div
                     key={idx}
-                    className="grid grid-cols-7 gap-4 border-b border-border/50 px-4 py-2 hover:bg-secondary/30 transition-colors"
+                    onClick={() => onTransactionClick?.(tx)}
+                    className={cn(
+                      "grid grid-cols-7 gap-4 border-b border-border/50 px-4 py-2 transition-colors",
+                      onTransactionClick
+                        ? "cursor-pointer hover:bg-secondary/30 hover:border-[#00ff41]/30"
+                        : ""
+                    )}
                   >
                     <div className="text-muted-foreground">
                       {formatTime(tx.transaction?.timestamp)}

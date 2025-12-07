@@ -1,9 +1,22 @@
 import { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { ScrollArea } from "../components/ui/scroll-area";
-import { Bot, Send, Loader2 } from "lucide-react";
+import {
+  Bot,
+  Send,
+  Loader2,
+  Shield,
+  TrendingDown,
+  BarChart3,
+} from "lucide-react";
 import { WalletGraph } from "../components/wallet-graph";
+import { cn } from "../lib/utils";
 
 interface Message {
   id: string;
@@ -17,7 +30,8 @@ export function Chat() {
     {
       id: "1",
       role: "assistant",
-      content: "Hello! I'm AEGIS, your AI security copilot for Qubic blockchain. Ask me anything about network security, risk analysis, or transactions.",
+      content:
+        "Hello! I'm AEGIS, your AI security copilot for Qubic blockchain. Ask me anything about network security, risk analysis, or transactions.",
       timestamp: new Date(),
     },
   ]);
@@ -58,9 +72,14 @@ export function Chat() {
       const data = await response.json();
 
       // Better error handling for Groq issues
-      let content = data.answer || "I apologize, but I couldn't generate a response.";
-      if (!data.ai_generated && data.answer?.includes("Groq API is not configured")) {
-        content = "⚠️ Groq API is not configured. Please set GROQ_API_KEY in backend/.env file for full AI capabilities. Currently using fallback responses.";
+      let content =
+        data.answer || "I apologize, but I couldn't generate a response.";
+      if (
+        !data.ai_generated &&
+        data.answer?.includes("Groq API is not configured")
+      ) {
+        content =
+          "⚠️ Groq API is not configured. Please set GROQ_API_KEY in backend/.env file for full AI capabilities. Currently using fallback responses.";
       }
 
       const assistantMessage: Message = {
@@ -88,6 +107,76 @@ export function Chat() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const handleQuickAction = async (action: string) => {
+    if (isLoading) return;
+
+    const quickActions: Record<string, string> = {
+      analyze: "Analyze the last security alert. What was detected and why?",
+      whale:
+        "Show me recent whale activity. Are there any suspicious large transactions?",
+      predict:
+        "Predict the risk level for the next 10 ticks. What should I watch for?",
+    };
+
+    const question = quickActions[action];
+    if (!question) return;
+
+    // Create user message immediately
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: question,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/ask-aegis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: question,
+          context: {},
+        }),
+      });
+
+      const data = await response.json();
+
+      let content =
+        data.answer || "I apologize, but I couldn't generate a response.";
+      if (
+        !data.ai_generated &&
+        data.answer?.includes("Groq API is not configured")
+      ) {
+        content =
+          "⚠️ Groq API is not configured. Please set GROQ_API_KEY in backend/.env file for full AI capabilities. Currently using fallback responses.";
+      }
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: content,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `Error: ${error}. Please make sure the backend is running.`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -151,6 +240,40 @@ export function Chat() {
               </div>
             </ScrollArea>
 
+            {/* Quick Action Buttons */}
+            <div className="mb-3 flex flex-wrap gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickAction("analyze")}
+                disabled={isLoading}
+                className="text-xs font-mono border-[#00ff41]/30 hover:bg-[#00ff41]/10 hover:border-[#00ff41]"
+              >
+                <Shield className="h-3 w-3 mr-1" />
+                Analyze Last Alert
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickAction("whale")}
+                disabled={isLoading}
+                className="text-xs font-mono border-[#00ff41]/30 hover:bg-[#00ff41]/10 hover:border-[#00ff41]"
+              >
+                <TrendingDown className="h-3 w-3 mr-1" />
+                Show Whale Activity
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleQuickAction("predict")}
+                disabled={isLoading}
+                className="text-xs font-mono border-[#00ff41]/30 hover:bg-[#00ff41]/10 hover:border-[#00ff41]"
+              >
+                <BarChart3 className="h-3 w-3 mr-1" />
+                Predict Next Tick
+              </Button>
+            </div>
+
             <div className="flex gap-2">
               <input
                 type="text"
@@ -179,4 +302,3 @@ export function Chat() {
     </div>
   );
 }
-

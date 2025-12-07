@@ -67,28 +67,6 @@ const getDemoMarketIntel = (): MarketIntelData => {
         risk_label: "SAFE",
         last_updated: now.toISOString(),
       },
-      {
-        symbol: "QXLP",
-        name: "Qubic LP Token",
-        latest_risk_score: 28.9,
-        average_risk_24h: 32.1,
-        alerts_24h: 1,
-        trend: "DOWN" as const,
-        liquidity_tag: "MEDIUM",
-        risk_label: "LOW",
-        last_updated: now.toISOString(),
-      },
-      {
-        symbol: "QXT",
-        name: "Qubic Test Token",
-        latest_risk_score: 67.8,
-        average_risk_24h: 65.4,
-        alerts_24h: 5,
-        trend: "UP" as const,
-        liquidity_tag: "LOW",
-        risk_label: "ELEVATED",
-        last_updated: now.toISOString(),
-      },
     ],
     signals: [
       {
