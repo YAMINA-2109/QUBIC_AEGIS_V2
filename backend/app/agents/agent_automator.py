@@ -23,7 +23,7 @@ class AgentAutomator:
     
     def __init__(self):
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-        self.model = "llama-3.3-70b-versatile"
+        self.model = os.getenv("GROQ_MODEL")
         self.n8n_webhook_url = os.getenv("N8N_WEBHOOK_URL")
 
     async def decide_and_execute(self, risk_event: Dict[str, Any]) -> Dict[str, Any]:

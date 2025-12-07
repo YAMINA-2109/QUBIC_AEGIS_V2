@@ -18,7 +18,7 @@ export function Header({ isConnected }: HeaderProps) {
   useEffect(() => {
     const fetchDEFCON = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/defcon-status")
+        const response = await fetch("http://127.0.0.1:8000/api/defcon-status")
         if (response.ok) {
           const data = await response.json()
           setDefconStatus(data)
@@ -41,7 +41,7 @@ export function Header({ isConnected }: HeaderProps) {
   }
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
+    <header className="flex h-16 items-center justify-between border-b border-gray-800 bg-[#0a0a0a] px-6">
       <div className="flex items-center gap-4">
         <h1 className="text-xl font-bold tracking-wider text-foreground font-mono">
           QUBIC AEGIS - NEURAL DEFENSE SYSTEM

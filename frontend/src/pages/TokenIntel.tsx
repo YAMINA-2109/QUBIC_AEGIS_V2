@@ -9,6 +9,7 @@ import { Loader2, TrendingUp, TrendingDown, Minus, AlertCircle, Activity, Filter
 import { cn } from "../lib/utils";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { SentimentGauge } from "../components/sentiment-gauge";
 
 interface TokenStats {
   symbol: string;
@@ -39,8 +40,82 @@ interface MarketIntelData {
   generated_at: string;
 }
 
+// Demo data fallback for presentation
+const getDemoMarketIntel = (): MarketIntelData => {
+  const now = new Date();
+  return {
+    tokens: [
+      {
+        symbol: "QXALPHA",
+        name: "Qubic Alpha Token",
+        latest_risk_score: 45.3,
+        average_risk_24h: 48.7,
+        alerts_24h: 3,
+        trend: "UP" as const,
+        liquidity_tag: "HIGH",
+        risk_label: "MODERATE",
+        last_updated: now.toISOString(),
+      },
+      {
+        symbol: "QX",
+        name: "Qubic Token",
+        latest_risk_score: 12.5,
+        average_risk_24h: 15.2,
+        alerts_24h: 0,
+        trend: "STABLE" as const,
+        liquidity_tag: "VERY_HIGH",
+        risk_label: "SAFE",
+        last_updated: now.toISOString(),
+      },
+      {
+        symbol: "QXLP",
+        name: "Qubic LP Token",
+        latest_risk_score: 28.9,
+        average_risk_24h: 32.1,
+        alerts_24h: 1,
+        trend: "DOWN" as const,
+        liquidity_tag: "MEDIUM",
+        risk_label: "LOW",
+        last_updated: now.toISOString(),
+      },
+      {
+        symbol: "QXT",
+        name: "Qubic Test Token",
+        latest_risk_score: 67.8,
+        average_risk_24h: 65.4,
+        alerts_24h: 5,
+        trend: "UP" as const,
+        liquidity_tag: "LOW",
+        risk_label: "ELEVATED",
+        last_updated: now.toISOString(),
+      },
+    ],
+    signals: [
+      {
+        id: "sig_001",
+        token_symbol: "QXALPHA",
+        timestamp: new Date(now.getTime() - 30000).toISOString(),
+        signal_type: "WHALE_TRANSFER",
+        risk_score: 78.5,
+        risk_level: "HIGH" as const,
+        message: "Large QXALPHA transfer detected - potential market manipulation",
+      },
+      {
+        id: "sig_002",
+        token_symbol: "QXT",
+        timestamp: new Date(now.getTime() - 60000).toISOString(),
+        signal_type: "VOLATILITY_SPIKE",
+        risk_score: 65.2,
+        risk_level: "MEDIUM" as const,
+        message: "Unusual volatility detected in QXT trading pairs",
+      },
+    ],
+    generated_at: now.toISOString(),
+  };
+};
+
 export function TokenIntel() {
-  const [data, setData] = useState<MarketIntelData | null>(null);
+  const [data, setData] = useState<MarketIntelData | null>(getDemoMarketIntel());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,7 +124,7 @@ export function TokenIntel() {
 
   const fetchMarketIntel = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/market-intel/overview");
+      const response = await fetch("http://127.0.0.1:8000/api/market-intel/overview");
       if (!response.ok) {
         throw new Error("Failed to fetch market intelligence");
       }
@@ -59,6 +134,8 @@ export function TokenIntel() {
     } catch (err) {
       console.error("Error fetching market intel:", err);
       setError(err instanceof Error ? err.message : "Unknown error");
+      // Keep demo data on error
+      setData(getDemoMarketIntel());
     } finally {
       setLoading(false);
     }
@@ -110,12 +187,22 @@ export function TokenIntel() {
   };
 
   const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
+    try {
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return "Just now";
+      const now = new Date();
+      const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+      if (diffSeconds < 10) return "Just now";
+      if (diffSeconds < 60) return `${diffSeconds}s ago`;
+      return date.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      });
+    } catch {
+      return "Just now";
+    }
   };
 
   if (loading && !data) {
@@ -147,27 +234,49 @@ export function TokenIntel() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-6 overflow-auto p-6">
+    <div className="flex h-full flex-col gap-6 overflow-auto p-6 bg-[#050505]">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold font-mono text-primary flex items-center gap-3">
+          <h1 className="text-3xl font-bold font-mono text-[#00ff41] flex items-center gap-3">
             <Activity className="h-8 w-8" />
             MARKET INTELLIGENCE
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground font-mono">
+          <p className="mt-1 text-sm text-gray-400 font-mono">
             Real-time token analysis & trading signals
           </p>
         </div>
         {data && (
           <div className="text-right">
-            <p className="text-xs font-mono text-muted-foreground">LAST UPDATE</p>
-            <p className="text-sm font-mono text-primary">
+            <p className="text-xs font-mono text-gray-400">LAST UPDATE</p>
+            <p className="text-sm font-mono text-[#00ff41]">
               {formatTime(data.generated_at)}
             </p>
           </div>
         )}
       </div>
+
+      {/* Network Sentiment Gauge */}
+      {(() => {
+        // Calculate sentiment score from tokens (0-100: 0 = Panic, 100 = Greed)
+        // Lower risk = higher sentiment (greed), Higher risk = lower sentiment (fear)
+        const sentimentScore = data
+          ? Math.max(
+              0,
+              Math.min(
+                100,
+                data.tokens.length > 0
+                  ? data.tokens.reduce(
+                      (sum, t) => sum + (100 - t.latest_risk_score),
+                      0
+                    ) / data.tokens.length
+                  : 50
+              )
+            )
+          : 55; // Default to slightly positive sentiment
+
+        return <SentimentGauge sentimentScore={sentimentScore} />;
+      })()}
 
       {/* Section 1: Top Assets Grid */}
       <div>

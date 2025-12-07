@@ -17,6 +17,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.pydantic_v1 import BaseModel, Field
 
+from app.config import settings
+
 load_dotenv()
 
 # Define the expected output structure (Strict JSON)
@@ -36,10 +38,18 @@ class AgentRiskAnalyst:
     def __init__(self):
         # Initialize Groq LLM via LangChain (Llama-3-70b for maximum intelligence)
         # We use temperature 0.1 for factual, consistent, non-hallucinated responses.
+        model_name = settings.GROQ_MODEL
+        groq_api_key = settings.GROQ_API_KEY
+        
+        if not model_name:
+            raise ValueError("GROQ_MODEL environment variable is not set. Default: llama-3.3-70b-versatile")
+        if not groq_api_key:
+            raise ValueError("GROQ_API_KEY environment variable is not set")
+            
         self.llm = ChatGroq(
             temperature=0.1, 
-            model_name="llama-3.3-70b-versatile",
-            groq_api_key=os.getenv("GROQ_API_KEY")
+            model_name=model_name,
+            groq_api_key=groq_api_key
         )
         
         self.parser = JsonOutputParser(pydantic_object=RiskAnalysisOutput)

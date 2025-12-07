@@ -22,7 +22,7 @@ class AgentPredictor:
     def __init__(self):
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
         # Using the versatile model as verified working
-        self.model = "llama-3.3-70b-versatile" 
+        self.model = os.getenv("GROQ_MODEL")
         
         # Local memory for risk history (Simulating a Time-Series DB)
         # Format: List of risk scores [10, 20, 45, 80...]

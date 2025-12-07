@@ -22,7 +22,7 @@ class AgentSimulator:
     
     def __init__(self):
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-        self.model = "llama-3.3-70b-versatile"
+        self.model = os.getenv("GROQ_MODEL")
 
     async def run_simulation(self, token_symbol: str, attack_type: str, liquidity_amount: float) -> Dict[str, Any]:
         """

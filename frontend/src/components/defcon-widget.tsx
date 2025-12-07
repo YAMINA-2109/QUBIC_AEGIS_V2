@@ -17,7 +17,7 @@ export function DEFCONWidget() {
   useEffect(() => {
     const fetchDEFCON = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/defcon-status");
+        const response = await fetch("http://127.0.0.1:8000/api/defcon-status");
         if (response.ok) {
           const data = await response.json();
           setDefconStatus(data);
