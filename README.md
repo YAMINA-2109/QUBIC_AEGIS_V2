@@ -15,7 +15,7 @@
 
 ## 🎬 Demo Video
 
-**[INSERT YOUR YOUTUBE DEMO LINK HERE]**
+**[![QUBIC AEGIS – Demo Video](https://img.youtube.com/vi/kplYDER2XV4/maxresdefault.jpg)](https://www.youtube.com/watch?v=kplYDER2XV4)**
 
 > Watch the 5-minute demonstration to see the multi-agent cognitive system in action, detecting threats, predicting attacks, and executing automated defenses in real-time.
 
