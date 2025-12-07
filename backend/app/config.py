@@ -14,7 +14,7 @@ class Settings:
     GROQ_API_KEY: Optional[str] = os.getenv("GROQ_API_KEY")
     
     # --- QUBIC NETWORK (REAL) ---
-    # Liste des RPCs pour le Failover (Code du collègue)
+    # List of RPCs for Failover
     QUBIC_RPC_URLS: List[str] = [
         os.getenv("QUBIC_RPC_URL", "https://rpc.qubic.org/v1"),
         "https://testnet-rpc.qubic.org/v1",
@@ -22,14 +22,14 @@ class Settings:
     ]
     
     # --- SIMULATION SETTINGS ---
-    # Si True, on injecte des fausses attaques au milieu du trafic réel
+    # If True, inject simulated attacks into real traffic
     QUBIC_REALISTIC_MODE: bool = os.getenv("QUBIC_REALISTIC_MODE", "true").lower() == "true"
     MOCK_DATA_INTERVAL: float = float(os.getenv("MOCK_DATA_INTERVAL", "2.0"))
     
     # --- AUTOMATION (n8n) ---
     N8N_WEBHOOK_URL: Optional[str] = os.getenv(
         "N8N_WEBHOOK_URL",
-        # Mets ton URL n8n qui marche ici par défaut pour être sûr
+        # Default n8n webhook URL
         "https://qubicaegis.app.n8n.cloud/webhook/b4662347-9dd7-4934-8eab-33bbcee20ddc"
     )
     

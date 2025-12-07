@@ -263,17 +263,17 @@ export function LiveMonitor() {
                   data.xai_explanation.summary ||
                   "";
                 if (xaiText) {
-                  addLog(`🧠 XAI: ${xaiText.substring(0, 80)}...`);
+                  addLog(`XAI: ${xaiText.substring(0, 80)}...`);
                 }
               }
 
               if (data.active_defense) {
                 addLog(
-                  `🛡️ ACTIVE DEFENSE: ${data.active_defense.action} - ${data.active_defense.status}`
+                  `ACTIVE DEFENSE: ${data.active_defense.action} - ${data.active_defense.status}`
                 );
               }
             } else if (message.type === "connection") {
-              addLog(`ℹ️ ${message.message}`);
+              addLog(`${message.message}`);
             }
           } catch (error) {
             console.error("Error parsing WebSocket message:", error);
@@ -283,12 +283,12 @@ export function LiveMonitor() {
         ws.onerror = (error) => {
           console.error("WebSocket error:", error);
           setIsConnected(false);
-          addLog("❌ WebSocket connection error");
+          addLog("WebSocket connection error");
         };
 
         ws.onclose = () => {
           setIsConnected(false);
-          addLog("🔴 Disconnected from monitoring stream");
+          addLog("Disconnected from monitoring stream");
           setTimeout(connectWebSocket, 3000);
         };
 
@@ -297,7 +297,7 @@ export function LiveMonitor() {
         console.error("Failed to connect WebSocket:", error);
         setIsConnected(false);
         addLog(
-          "❌ Failed to connect to backend. Make sure the server is running on port 8000"
+          "Failed to connect to backend. Make sure the server is running on port 8000"
         );
       }
     };
@@ -329,7 +329,7 @@ export function LiveMonitor() {
                   size="lg"
                   className={
                     defconStatus.defcon_level <= 2
-                      ? "animate-pulse shadow-lg shadow-red-500/50"
+                      ? "gentle-pulse shadow-lg shadow-red-500/50"
                       : ""
                   }
                 />

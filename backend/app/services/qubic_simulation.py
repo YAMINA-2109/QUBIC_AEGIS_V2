@@ -43,9 +43,11 @@ class QubicSimulation:
             "suspicious_pattern",   # 1 in 10
         ]
         
-        # Timing
+        # Timing - Optimal balance for demo (not too frequent, not too rare)
         self.last_attack_tick = 0
-        self.attack_interval = 50  # Attacks every 50 ticks on average
+        self.attack_interval = 30  # Initial short interval to show system at start
+        self.attack_count = 0  # Attack counter to reduce after initial phase
+        self.warmup_complete = False  # Initial phase with more attacks
         
         # Token pool for Qubic ecosystem (based on Qubictrade.com)
         self.token_pool = [
@@ -123,6 +125,8 @@ class QubicSimulation:
         # Periodic attack patterns
         if self.tick_counter - self.last_attack_tick > self.attack_interval:
             self.last_attack_tick = self.tick_counter
+            self.attack_count += 1
+            
             attack_type = random.choice([
                 "whale_transfer",
                 "suspicious_pattern",
@@ -130,8 +134,15 @@ class QubicSimulation:
                 "flash_loan_pattern",
                 "spam_attack",
             ])
-            # Set interval for next attack (80-120 ticks) to maintain ~10% high risk
-            self.attack_interval = random.randint(80, 120)
+            
+            # Initial phase (first 3-4 attacks): frequent to show the system
+            if self.attack_count <= 4:
+                self.attack_interval = random.randint(30, 45)  # Frequent at start
+            else:
+                # After initial phase: much less frequent to allow demos
+                self.warmup_complete = True
+                self.attack_interval = random.randint(150, 250)  # Much less frequent after
+            
             return attack_type
         
         # Random selection from pool
@@ -298,13 +309,12 @@ class QubicDataReplay:
             try:
                 with open(self.data_file, 'r') as f:
                     self.transactions = json.load(f)
-                print(f"Loaded {len(self.transactions)} transactions from {self.data_file}")
+                # File loaded successfully
             except Exception as e:
-                print(f"Error loading transaction file: {e}")
+                # Error loading file - will use simulation mode
                 self.transactions = []
         else:
-            print(f"Transaction file not found: {self.data_file}")
-            print("Using simulation mode instead")
+            # File not found - will use simulation mode
             self.transactions = []
     
     async def get_next_transaction(self) -> Optional[Transaction]:
@@ -330,6 +340,6 @@ class QubicDataReplay:
                 timestamp=datetime.fromisoformat(tx_data.get("timestamp", datetime.now().isoformat()))
             )
         except Exception as e:
-            print(f"Error parsing transaction: {e}")
+            # Error parsing transaction - skip it
             return None
 

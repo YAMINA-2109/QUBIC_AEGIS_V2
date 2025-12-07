@@ -79,7 +79,7 @@ export function Chat() {
         data.answer?.includes("Groq API is not configured")
       ) {
         content =
-          "⚠️ Groq API is not configured. Please set GROQ_API_KEY in backend/.env file for full AI capabilities. Currently using fallback responses.";
+          "Groq API is not configured. Please set GROQ_API_KEY in backend/.env file for full AI capabilities. Currently using fallback responses.";
       }
 
       const assistantMessage: Message = {
@@ -156,7 +156,7 @@ export function Chat() {
         data.answer?.includes("Groq API is not configured")
       ) {
         content =
-          "⚠️ Groq API is not configured. Please set GROQ_API_KEY in backend/.env file for full AI capabilities. Currently using fallback responses.";
+          "Groq API is not configured. Please set GROQ_API_KEY in backend/.env file for full AI capabilities. Currently using fallback responses.";
       }
 
       const assistantMessage: Message = {

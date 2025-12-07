@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Sidebar } from "./components/sidebar";
 import { Header } from "./components/header";
@@ -6,6 +6,7 @@ import { LiveMonitor } from "./pages/LiveMonitor";
 import { TokenIntel } from "./pages/TokenIntel";
 import { WarRoom } from "./pages/WarRoom";
 import { NeuralSearch } from "./pages/NeuralSearch";
+import { SmartGuard } from "./pages/SmartGuard";
 import { Toaster } from "sonner";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import {
@@ -23,8 +24,13 @@ interface DEFCONStatus {
 
 function AppContent() {
   const { isConnected } = useConnection();
+  const location = useLocation();
   const [defconStatus, setDefconStatus] = useState<DEFCONStatus | null>(null);
   const [isUnderAttack, setIsUnderAttack] = useState(false);
+
+  // Only show pulsing border on Live Monitor page
+  const isLiveMonitorPage = location.pathname === "/";
+  const shouldShowPulsing = isUnderAttack && isLiveMonitorPage;
 
   // Fetch DEFCON status for global attack effect
   useEffect(() => {
@@ -50,11 +56,11 @@ function AppContent() {
     <div
       className={cn(
         "flex h-screen bg-[#050505] relative",
-        isUnderAttack && "border-4 border-red-500 animate-pulse"
+        shouldShowPulsing && "border-4 border-red-500 gentle-pulse"
       )}
     >
-      {/* Red overlay when under attack */}
-      {isUnderAttack && (
+      {/* Red overlay when under attack - only on Live Monitor */}
+      {shouldShowPulsing && (
         <div className="absolute inset-0 bg-red-500/5 pointer-events-none z-50" />
       )}
 
@@ -71,6 +77,7 @@ function AppContent() {
           <Route path="/market-intel" element={<TokenIntel />} />
           <Route path="/war-room" element={<WarRoom />} />
           <Route path="/neural-search" element={<NeuralSearch />} />
+          <Route path="/smart-guard" element={<SmartGuard />} />
         </Routes>
       </div>
     </div>

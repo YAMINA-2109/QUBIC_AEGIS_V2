@@ -80,23 +80,20 @@ export function WarRoom() {
         setNotificationData({ threatType, riskScore });
         setShowNotification(true);
 
-        toast.success(
-          `✅ ${scenarioName} injected! Attack in network stream.`,
-          {
-            id: toastId,
-            duration: 4000,
-            description:
-              "ATTACK INJECTED INTO NETWORK STREAM - Monitoring active",
-          }
-        );
+        toast.success(`${scenarioName} injected! Attack in network stream.`, {
+          id: toastId,
+          duration: 4000,
+          description:
+            "ATTACK INJECTED INTO NETWORK STREAM - Monitoring active",
+        });
       } else {
-        toast.error(`❌ Injection failed: ${data.detail || "Unknown error"}`, {
+        toast.error(`Injection failed: ${data.detail || "Unknown error"}`, {
           id: toastId,
           duration: 4000,
         });
       }
     } catch (error) {
-      toast.error(`❌ Error: ${error}`, {
+      toast.error(`Error: ${error}`, {
         id: toastId,
         duration: 4000,
       });

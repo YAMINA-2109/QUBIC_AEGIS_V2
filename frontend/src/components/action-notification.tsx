@@ -109,13 +109,13 @@ export function ActionNotification({
           {phase === "detected" && (
             <>
               <div className="text-sm text-gray-300">
-                <span className="text-red-500 font-bold">⚠️</span> Threat Type:{" "}
+                Threat Type:{" "}
                 <span className="text-red-400 font-bold">
                   {getThreatLabel(threatType)}
                 </span>
               </div>
               <div className="text-sm text-gray-300">
-                <span className="text-red-500 font-bold">🔥</span> Risk Score:{" "}
+                Risk Score:{" "}
                 <span className="text-red-400 font-bold">{riskScore}/100</span>
               </div>
             </>
@@ -123,13 +123,13 @@ export function ActionNotification({
 
           {phase === "blocking" && (
             <div className="text-lg text-yellow-400 font-bold animate-pulse">
-              🤖 AI DECISION: BLOCKING TRANSACTION...
+              AI DECISION: BLOCKING TRANSACTION...
             </div>
           )}
 
           {phase === "executed" && (
             <div className="text-lg text-green-400 font-bold">
-              ✅ ACTION EXECUTED via EasyConnect
+              ACTION EXECUTED via EasyConnect
             </div>
           )}
         </div>

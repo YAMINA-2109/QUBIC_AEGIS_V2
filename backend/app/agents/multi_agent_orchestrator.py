@@ -126,9 +126,10 @@ class MultiAgentOrchestrator:
         
         previous_defcon = self.current_defcon_level
         
-        if attack_count >= 10: self.current_defcon_level = 1
-        elif attack_count >= 5: self.current_defcon_level = 2
-        elif attack_count >= 3: self.current_defcon_level = 3
+        # Thresholds adjusted for demo: easier to trigger to show system in action
+        if attack_count >= 3: self.current_defcon_level = 1  # DEFCON 1 with 3+ attacks/min (instead of 10)
+        elif attack_count >= 2: self.current_defcon_level = 2  # DEFCON 2 with 2 attacks/min (instead of 5)
+        elif attack_count >= 1: self.current_defcon_level = 3  # DEFCON 3 with 1 attack/min (instead of 3)
         else: self.current_defcon_level = 5
         
         # Adjust alert threshold based on DEFCON level
@@ -241,5 +242,5 @@ class MultiAgentOrchestrator:
         return {"nodes": nodes, "links": links, "clusters": []}
     
     def _get_wallet_insights(self, wallet_id):
-        # Fallback pour éviter les erreurs
+        # Fallback to avoid errors
         return {"exists": True, "transaction_count": 0}

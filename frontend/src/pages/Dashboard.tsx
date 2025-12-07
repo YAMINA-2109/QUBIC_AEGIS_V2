@@ -147,7 +147,7 @@ export function Dashboard() {
                   data.xai_explanation.summary ||
                   "";
                 if (xaiText) {
-                  addLog(`🧠 XAI: ${xaiText.substring(0, 80)}...`);
+                  addLog(`XAI: ${xaiText.substring(0, 80)}...`);
                 }
               }
 
@@ -162,7 +162,7 @@ export function Dashboard() {
               // Log active defense if triggered
               if (data.active_defense) {
                 addLog(
-                  `🛡️ ACTIVE DEFENSE: ${data.active_defense.action} - ${data.active_defense.status}`
+                  `ACTIVE DEFENSE: ${data.active_defense.action} - ${data.active_defense.status}`
                 );
               }
 
@@ -183,7 +183,7 @@ export function Dashboard() {
         ws.onerror = (error) => {
           console.error("WebSocket error:", error);
           setIsConnected(false);
-          addLog("❌ WebSocket connection error");
+          addLog("WebSocket connection error");
         };
 
         ws.onclose = () => {
@@ -197,7 +197,7 @@ export function Dashboard() {
         console.error("Failed to connect WebSocket:", error);
         setIsConnected(false);
         addLog(
-          "❌ Failed to connect to backend. Make sure the server is running on port 8000"
+          "Failed to connect to backend. Make sure the server is running on port 8000"
         );
       }
     };
@@ -261,30 +261,28 @@ export function Dashboard() {
       const data = await response.json();
 
       if (response.ok) {
-        toast.success(`✅ ${scenarioName} isolated! Protocols initiated.`, {
+        toast.success(`${scenarioName} isolated! Protocols initiated.`, {
           id: toastId,
           duration: 4000,
           description:
             "Discord notification sent. Automation workflow activated.",
         });
         addLog(
-          `✅ ${scenarioName} triggered successfully - n8n workflow activated`
+          `${scenarioName} triggered successfully - n8n workflow activated`
         );
       } else {
-        toast.error(`❌ Automation failed: ${data.detail || "Unknown error"}`, {
+        toast.error(`Automation failed: ${data.detail || "Unknown error"}`, {
           id: toastId,
           duration: 4000,
         });
-        addLog(
-          `❌ Automation trigger failed: ${data.detail || "Unknown error"}`
-        );
+        addLog(`Automation trigger failed: ${data.detail || "Unknown error"}`);
       }
     } catch (error) {
-      toast.error(`❌ Error: ${error}`, {
+      toast.error(`Error: ${error}`, {
         id: toastId,
         duration: 4000,
       });
-      addLog(`❌ Error triggering automation: ${error}`);
+      addLog(`Error triggering automation: ${error}`);
     } finally {
       setTimeout(() => {
         setActiveScenario(null);
@@ -315,7 +313,7 @@ export function Dashboard() {
               {activeScenario === "WHALE" ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                <>⚠️ WHALE DUMP</>
+                <>WHALE DUMP</>
               )}
             </Button>
 
@@ -328,7 +326,7 @@ export function Dashboard() {
               {activeScenario === "RUG" ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                <>☠️ RUG PULL</>
+                <>RUG PULL</>
               )}
             </Button>
 
@@ -341,7 +339,7 @@ export function Dashboard() {
               {activeScenario === "FLASH" ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                <>⚡ FLASH LOAN</>
+                <>FLASH LOAN</>
               )}
             </Button>
           </div>

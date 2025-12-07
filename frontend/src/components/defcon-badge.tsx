@@ -23,7 +23,7 @@ export function DefconBadge({
   };
 
   const getGlow = (defconLevel: number) => {
-    if (defconLevel <= 2) return "animate-pulse";
+    if (defconLevel <= 2) return "gentle-pulse";
     if (defconLevel === 3) return "";
     return "";
   };
@@ -47,7 +47,7 @@ export function DefconBadge({
         className
       )}
     >
-      <span className={cn(isCritical && "animate-pulse")}>DEFCON</span>
+      <span className={cn(isCritical && "gentle-pulse")}>DEFCON</span>
       <span>{level}</span>
     </div>
   );

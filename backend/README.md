@@ -1,185 +1,242 @@
-# 🛡️ QUBIC AEGIS - Predictive AI Multi-Agent Security & Risk Intelligence & Trading Intelligence System for Qubic Blockchain
+# QUBIC AEGIS Backend
 
-**Version 2.1** - Production-Ready Security & Trading Intelligence System for Qubic Blockchain
-
----
-
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Quick Start](#quick-start)
-- [Configuration](#configuration)
-- [API Endpoints](#api-endpoints)
-- [AI Features](#ai-features)
-- [Testing](#testing)
-- [Deployment](#deployment)
+**Version 2.1** - Production-Ready Multi-Agent AI Security & Risk Intelligence System
 
 ---
 
-## 🎯 Overview
+## Overview
 
-**QUBIC AEGIS** is an advanced AI-powered multi-agent security system designed for the Qubic blockchain. It provides real-time transaction analysis, risk assessment, predictive analytics, and automated threat response using cutting-edge AI technology.
+**QUBIC AEGIS Backend** is an advanced AI-powered multi-agent security system designed for the Qubic blockchain. It provides real-time transaction analysis, risk assessment, predictive analytics, automated threat response, and comprehensive smart contract auditing using cutting-edge AI technology.
 
 ### Key Capabilities
 
-- 🔍 **Real-time Transaction Monitoring** via WebSocket
-- 🧠 **AI-Powered Risk Analysis** using Groq (Llama-3.3-70b)
-- 📊 **Market Intelligence** for Qubic tokens
-- 🚨 **Adaptive Threat Detection** (DEFCON mode)
-- 🛡️ **Active Defense** simulation (Layer 1 ready)
-- 📈 **Predictive Risk Forecasting**
-- 💬 **Explainable AI (XAI)** for transparency
-- 🎯 **Trading Signals** for institutional traders
+- **Real-time Transaction Monitoring** via WebSocket
+- **AI-Powered Risk Analysis** using Groq (Llama-3.3-70b-versatile)
+- **Market Intelligence** for Qubic tokens
+- **Adaptive Threat Detection** (DEFCON mode)
+- **Active Defense** simulation (Layer 1 ready)
+- **Predictive Risk Forecasting**
+- **Explainable AI (XAI)** for transparency
+- **Trading Signals** for institutional traders
+- **Smart Contract Auditing** via integrated SmartGuard Core
 
 ---
 
-## ✨ Features
+## Features
 
 ### Core Security Features
 
-1. **Multi-Agent AI System**
+#### 1. Multi-Agent AI System
 
-   - **Agent Collector**: Extracts transaction features
-   - **Agent Risk Analyst**: Real LLM-powered risk analysis
-   - **Agent Predictor**: Forecasting future risks
-   - **Agent Simulator**: Attack scenario simulation
-   - **Agent Automator**: n8n/EasyConnect integration
+- **Agent Collector**: Extracts transaction features and patterns
+- **Agent Risk Analyst**: Real LLM-powered risk analysis using Groq
+- **Agent Predictor**: Forecasting future risks with EMA algorithms
+- **Agent Simulator**: Attack scenario simulation and analysis
+- **Agent Automator**: n8n/EasyConnect integration for active defense
 
-2. **Adaptive Thresholds (DEFCON Mode)** 🚨
+#### 2. Adaptive Thresholds (DEFCON Mode)
 
-   - Automatically adjusts alert sensitivity based on attack frequency
-   - DEFCON 5 (Normal) → DEFCON 1 (Maximum Alert)
-   - Dynamic threshold adjustment (80 → 50 when under heavy attack)
-   - Real-time status via `/api/defcon-status`
+Automatically adjusts alert sensitivity based on attack frequency:
 
-3. **Active Defense** 🛡️
+| DEFCON Level | Attacks/min | Alert Threshold | Status              |
+| ------------ | ----------- | --------------- | ------------------- |
+| **DEFCON 5** | 0           | 80              | Normal Operations   |
+| **DEFCON 4** | 1+          | 75              | Increased Readiness |
+| **DEFCON 3** | 1+          | 70              | Elevated Alert      |
+| **DEFCON 2** | 2+          | 60              | High Alert          |
+| **DEFCON 1** | 3+          | 50              | Maximum Alert       |
 
-   - Simulated firewall blocks for CRITICAL risks
-   - Layer 1 integration ready
-   - Automatic mitigation steps
-   - Status tracking and logging
+**How it works**:
 
-4. **Sentiment Analysis** 💭
-   - Correlates on-chain activity with social sentiment
-   - Mocked for demo (ready for real API integration)
-   - Twitter/Discord/Reddit mentions tracking
-   - Risk-sentiment correlation analysis
+- Tracks high-risk events (HIGH/CRITICAL) with timestamps
+- Calculates attack frequency in last 60 seconds
+- Automatically adjusts DEFCON level and alert threshold
+- Risk levels are upgraded in high-alert modes
 
-### Market Intelligence (V2)
+#### 3. Active Defense
 
-5. **Token Tracking**
+For CRITICAL risk events, the system simulates active defense actions:
 
-   - Real-time tracking of Qubic tokens (QX, QXALPHA, etc.)
-   - Risk scores per token
-   - 24h statistics and trends
-   - Liquidity and volume analysis
+- `FIREWALL_BLOCK` - Block command sent to network nodes
+- Status: `SENT_TO_NODE`
+- Mitigation steps logged
+- Ready for real Layer 1 integration
 
-6. **Trading Signals**
-   - Automatic signal generation for HIGH/CRITICAL risks
-   - Whale activity detection
-   - Volume spike alerts
-   - Suspicious cluster identification
+#### 4. Sentiment Analysis
+
+Correlates on-chain activity with social sentiment:
+
+- Sentiment score: -1.0 (bearish) to +1.0 (bullish)
+- Social mentions: Twitter, Discord, Reddit
+- Correlation analysis: CONFIRMED, PARTIAL, DIVERGENT, UNCERTAIN
+
+### Market Intelligence
+
+#### 5. Token Tracking
+
+- Real-time tracking of Qubic tokens (QX, QXALPHA, etc.)
+- Risk scores per token
+- 24h statistics and trends
+- Liquidity and volume analysis
+
+#### 6. Trading Signals
+
+Automatic signal generation:
+
+- **WHALE_DUMP_RISK**: Large sell orders detected
+- **VOLUME_SPIKE**: Unusual volume increase
+- **SUSPICIOUS_CLUSTER**: Coordinated activity patterns
 
 ### Predictive Analytics
 
-7. **Risk Forecasting**
+#### 7. Risk Forecasting
 
-   - Per-wallet risk predictions
-   - Global network risk trends
-   - Exponential Moving Average (EMA) algorithms
-   - Confidence scoring
+- Per-wallet risk predictions
+- Global network risk trends
+- Exponential Moving Average (EMA) algorithms
+- Confidence scoring
 
-8. **Attack Simulation**
-   - Multiple scenario types (whale_dump, wash_trade, flash_attack, etc.)
-   - Step-by-step attack breakdown
-   - AI-generated recommendations
-   - Impact estimation
+#### 8. Attack Simulation
+
+Multiple scenario types:
+
+- `whale_dump` - Large value transfers
+- `wash_trade` - Circular trading patterns
+- `flash_attack` - Rapid transaction bursts
+- `wallet_drain` - Account draining patterns
+- `spam_attack` - Network spam
+- `liquidity_manipulation` - Pool manipulation
+
+### Smart Contract Security
+
+#### 9. SmartGuard Core Integration
+
+**Strategic Integration**: In a previous Qubic Hackathon, we independently developed SmartGuard—an advanced C++ smart contract auditing platform that earned **2nd place** for its exceptional security analysis capabilities. When designing AEGIS, we recognized the perfect strategic alignment: SmartGuard protects contracts **before deployment**, while AEGIS protects them **during execution**. Rather than reinvent what already works, we made an intelligent decision: **integrate SmartGuard's proven expertise** into AEGIS's cognitive architecture.
+
+This integration represents **strategic synergy**, not dependency. AEGIS operates independently as a complete security platform. SmartGuard Core enhances it by adding pre-deployment security—completing the full security lifecycle.
+
+**SmartGuard Capabilities**:
+
+- Static code analysis for C++ smart contracts
+- Vulnerability detection (buffer overflows, infinite loops, logic errors)
+- Automated documentation generation
+- Functional specification creation
+- Test plan generation
+- Visual flow diagrams (Mermaid)
+- Qubic-specific contract simulation
 
 ### Explainable AI (XAI)
 
-9. **Transparent Decision Making**
-   - AI-generated explanations for every risk assessment
-   - Structured risk factors
-   - Confidence levels
-   - Actionable recommendations
+#### 10. Transparent Decision Making
+
+- AI-generated explanations for every risk assessment
+- Structured risk factors
+- Confidence levels
+- Actionable recommendations
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 backend/
 ├── app/
-│   ├── agents/              # AI Agents
-│   │   ├── agent_collector.py
-│   │   ├── agent_risk_analyst.py    # Real LLM-powered
-│   │   ├── agent_predictor.py       # EMA forecasting
-│   │   ├── agent_simulator.py       # Attack scenarios
-│   │   ├── agent_automator.py       # n8n integration
+│   ├── agents/                      # AI Agents
+│   │   ├── agent_collector.py      # Transaction feature extraction
+│   │   ├── agent_risk_analyst.py   # Real LLM-powered analysis
+│   │   ├── agent_predictor.py      # EMA forecasting
+│   │   ├── agent_simulator.py      # Attack scenarios
+│   │   ├── agent_automator.py      # n8n integration
 │   │   └── multi_agent_orchestrator.py  # Main coordinator
 │   ├── core/
-│   │   ├── ai_brain.py              # Groq integration
-│   │   └── ai_brain_langchain.py    # LangChain alternative
+│   │   ├── ai_brain.py             # Groq integration
+│   │   └── ai_brain_langchain.py   # LangChain alternative
 │   ├── models/
-│   │   ├── transaction.py           # Transaction model
-│   │   ├── events.py                # RiskEvent model
-│   │   └── market.py                # TokenStats, TokenSignal
+│   │   ├── transaction.py          # Transaction model
+│   │   ├── events.py               # RiskEvent model
+│   │   └── market.py               # TokenStats, TokenSignal
 │   ├── services/
-│   │   ├── mock_generator.py        # Transaction generator (V2: with tokens)
-│   │   ├── qubic_simulation.py      # Realistic Qubic simulation
-│   │   ├── qubic_data_replay.py     # Replay real data
-│   │   ├── market_intel.py          # Market Intelligence service
-│   │   └── test_data_generator.py   # Test data generation
+│   │   ├── mock_generator.py       # Transaction generator
+│   │   ├── qubic_simulation.py     # Realistic Qubic simulation
+│   │   ├── qubic_data_replay.py    # Replay real data
+│   │   ├── market_intel.py         # Market Intelligence service
+│   │   ├── test_data_generator.py  # Test data generation
+│   │   └── smart_guard/            # SmartGuard Core Integration
+│   │       ├── service.py          # Main service wrapper
+│   │       ├── graph/
+│   │       │   └── graph_builder.py # LangGraph workflow
+│   │       ├── nodes/
+│   │       │   └── qubicdocs_nodes.py # Audit agents
+│   │       ├── llms/
+│   │       │   └── groqllm.py      # LLM configuration
+│   │       ├── state/
+│   │       │   └── state.py        # State management
+│   │       └── utils/
+│   │           └── validators.py   # Validation utilities
 │   ├── api/
-│   │   └── routes.py                # All API endpoints
-│   └── config.py                    # Configuration
+│   │   └── routes.py               # All API endpoints
+│   └── config.py                   # Configuration
 ├── tests/
-│   └── verify_v2.py                 # Market Intelligence tests
-├── check_groq_setup.py              # Groq verification script
-├── init_test_data.py                # Initialize test data
-├── main.py                          # FastAPI app entry
+│   ├── test_automator_agent.py
+│   ├── test_predector_agent.py
+│   ├── test_risk_agent.py
+│   ├── test_simulator_agent.py
+│   ├── teste_collector_agent.py
+│   └── verify_v2.py                # Market Intelligence tests
+├── test_data/
+│   ├── transactions.json
+│   └── wallets.json
+├── check_groq_setup.py             # Groq verification script
+├── init_test_data.py               # Initialize test data
+├── main.py                         # FastAPI app entry
 ├── requirements.txt
-└── .env                             # Environment variables
+└── .env                            # Environment variables
 ```
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- Python 3.9+
-- pip
-- Groq API key (optional but recommended)
+- **Python 3.9+** (recommended: 3.11+)
+- **pip** package manager
+- **Groq API key** (optional but strongly recommended for AI features)
 
 ### Installation
 
 ```bash
-# 1. Install dependencies
+# 1. Navigate to backend directory
 cd backend
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 2. Configure environment
+# 3. Configure environment
+# Create .env file (see Configuration section)
 cp .env.example .env  # Or create manually
 # Edit .env and add your GROQ_API_KEY
 
-# 3. Verify Groq setup (optional)
+# 4. Verify Groq setup (optional but recommended)
 python check_groq_setup.py
 
-# 4. Initialize test data (optional)
+# 5. Initialize test data (optional)
 python init_test_data.py
 
-# 5. Start the server
+# 6. Start the server
 uvicorn main:app --reload
 ```
 
 The API will be available at `http://localhost:8000`
 
+**API Documentation**:
+
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -188,13 +245,18 @@ Create a `.env` file in the `backend/` directory:
 ```env
 # AI Configuration
 GROQ_API_KEY=gsk_your_api_key_here
-GROQ_MODEL=llama-3.3-70b-versatile  # Options: llama-3.3-70b-versatile, llama-3.1-70b-versatile, mixtral-8x7b-32768
+GROQ_MODEL=llama-3.3-70b-versatile
+
+# Options for GROQ_MODEL:
+# - llama-3.3-70b-versatile (recommended, used by default)
+# - llama-3.1-70b-versatile
+# - mixtral-8x7b-32768
 
 # Qubic Network
 QUBIC_RPC_URL=https://api.qubic.org
-QUBIC_REALISTIC_MODE=true  # Use realistic Qubic simulation
+QUBIC_REALISTIC_MODE=true
 
-# n8n Integration
+# n8n Integration (for active defense automation)
 N8N_WEBHOOK_URL=https://your-n8n-webhook-url
 
 # Data Streaming
@@ -210,7 +272,7 @@ RISK_WHALE_THRESHOLD=50000.0
 
 1. Visit https://console.groq.com/
 2. Sign up / Log in
-3. Go to "API Keys"
+3. Go to "API Keys" section
 4. Create a new API key
 5. Add it to `.env` as `GROQ_API_KEY`
 
@@ -227,15 +289,17 @@ This script will:
 - Test Groq API connection
 - Provide troubleshooting tips
 
+**Note**: The system will work without Groq API key using rule-based analysis, but **real AI is strongly recommended** for best results.
+
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### WebSocket
 
 #### `WS /ws/monitor`
 
-Real-time transaction monitoring stream.
+Real-time transaction monitoring stream. Clients receive continuous updates with transaction analysis, risk scores, DEFCON status, and more.
 
 **Message Format**:
 
@@ -243,11 +307,22 @@ Real-time transaction monitoring stream.
 {
   "type": "transaction_analysis",
   "data": {
-    "transaction": {...},
+    "transaction": {
+      "id": "...",
+      "from": "...",
+      "to": "...",
+      "amount": 1234.56,
+      "token_symbol": "QXALPHA",
+      "timestamp": "..."
+    },
     "risk_score": 75.5,
     "risk_level": "HIGH",
-    "explanation": "...",
-    "prediction": {...},
+    "explanation": "AI-generated explanation...",
+    "prediction": {
+      "future_risk": 80.0,
+      "confidence": 0.85,
+      "horizon": "short_term"
+    },
     "defcon_status": {
       "defcon_level": 3,
       "alert_threshold": 70.0,
@@ -255,6 +330,7 @@ Real-time transaction monitoring stream.
     },
     "sentiment_analysis": {
       "sentiment_label": "BEARISH",
+      "sentiment_score": -0.65,
       "correlation_with_risk": "CONFIRMED"
     },
     "active_defense": {
@@ -274,45 +350,108 @@ Real-time transaction monitoring stream.
 - **`GET /api/health`** - Health check
 - **`GET /api/defcon-status`** - Current DEFCON level and adaptive threshold status
 
-#### Market Intelligence (V2)
+#### Market Intelligence
 
 - **`GET /api/market-intel/overview`** - Combined tokens overview and signals
 - **`GET /api/tokens`** - All tracked tokens with stats
 - **`GET /api/tokens/{symbol}`** - Specific token details (e.g., `/api/tokens/QXALPHA`)
 - **`GET /api/signals`** - Recent trading/security signals
+- **`GET /api/network-emotion`** - Network-wide sentiment analysis
 
 #### Predictions & Forecasting
 
 - **`GET /api/predict`** - Risk predictions
-  - Query params: `horizon` (short_term/medium_term/long_term), `wallet_id` (optional)
+  - Query params:
+    - `horizon` (optional): `short_term`, `medium_term`, `long_term`
+    - `wallet_id` (optional): Specific wallet analysis
 
 #### Attack Simulation
 
 - **`POST /api/simulate`** - Simulate attack scenario
-  - Body: `{ "scenario_type": "whale_dump", "parameters": {...} }`
+  - Body:
+    ```json
+    {
+      "scenario_type": "whale_dump",
+      "parameters": {
+        "amount": 50000,
+        "wallet_id": "..."
+      }
+    }
+    ```
   - Scenarios: `whale_dump`, `wash_trade`, `flash_attack`, `wallet_drain`, `spam_attack`, `liquidity_manipulation`
 
 #### Wallet Analysis
 
 - **`GET /api/wallet-graph`** - Wallet interaction graph
-  - Query params: `max_nodes` (default: 50)
+  - Query params:
+    - `max_nodes` (optional, default: 50): Maximum nodes in graph
 - **`GET /api/wallet/{wallet_id}`** - Specific wallet analysis
 
 #### AI Chat
 
 - **`POST /api/ask-aegis`** - Chat with AI security copilot
-  - Body: `{ "message": "Your question", "context": {...} }`
+  - Body:
+    ```json
+    {
+      "message": "Your question about Qubic security",
+      "context": {
+        "wallet_id": "...",
+        "transaction_id": "..."
+      }
+    }
+    ```
 
 #### Automation
 
 - **`POST /api/trigger-automation`** - Trigger n8n webhook
-  - Body: `{ "webhook_url": "...", "message": "..." }`
+  - Body:
+    ```json
+    {
+      "scenario_type": "WHALE",
+      "message": "Custom message"
+    }
+    ```
 - **`POST /api/trigger-automation-riskevent`** - Trigger with RiskEvent model
-  - Body: `{ "risk_event": {...}, "webhook_url": "..." }`
+  - Body:
+    ```json
+    {
+      "risk_event": {
+        "risk_score": 95,
+        "risk_level": "CRITICAL",
+        "explanation": "..."
+      },
+      "webhook_url": "..."
+    }
+    ```
+
+#### Smart Contract Auditing (SmartGuard)
+
+- **`POST /api/smart-guard/audit`** - Complete SmartGuard audit pipeline (8 steps)
+
+  - Body:
+    ```json
+    {
+      "code": "#include <iostream>\n...",
+      "language": "english"
+    }
+    ```
+  - Returns: Full audit report with comments, security analysis, documentation, flow diagrams, tests, and recommendations
+
+- **`POST /api/smart-guard/quick-audit`** - Quick security audit (semantic analysis + security audit only)
+  - Body:
+    ```json
+    {
+      "code": "#include <iostream>\n...",
+      "language": "english"
+    }
+    ```
+  - Returns: Quick security assessment without full documentation
+
+**Note**: SmartGuard endpoints require LangGraph dependencies. If not available, endpoints return 503 status with helpful error message.
 
 ---
 
-## 🧠 AI Features
+## AI Features
 
 ### Real AI Analysis (Groq)
 
@@ -338,97 +477,57 @@ If Groq is not configured, the system uses rule-based analysis with high-quality
 
 ---
 
-## 🚨 DEFCON Mode (Adaptive Thresholds)
+## SmartGuard Core Integration
 
-The system automatically adapts its sensitivity based on attack frequency:
+### Overview
 
-| DEFCON Level | Attacks/min | Alert Threshold | Status              |
-| ------------ | ----------- | --------------- | ------------------- |
-| **DEFCON 5** | 0           | 80              | Normal Operations   |
-| **DEFCON 4** | 1+          | 75              | Increased Readiness |
-| **DEFCON 3** | 3+          | 70              | Elevated Alert      |
-| **DEFCON 2** | 5+          | 60              | High Alert          |
-| **DEFCON 1** | 10+         | 50              | Maximum Alert       |
+SmartGuard Core is integrated as a strategic enhancement to AEGIS, providing pre-deployment security analysis for C++ smart contracts. It uses LangGraph to orchestrate an 8-step auditing pipeline:
 
-**How it works**:
+1. **Code Explanation & Commenting** - AI explains code functionality
+2. **Comment Review** - Validates and improves comments
+3. **Semantic Analysis** - Deep code understanding
+4. **Security Audit** - Vulnerability detection
+5. **Strict Validation** - Compliance checking
+6. **Specification Generation** - Functional specifications
+7. **Flow Diagram** - Visual representation (Mermaid)
+8. **Test Generation** - Automated test plans
 
-- Tracks high-risk events (HIGH/CRITICAL) with timestamps
-- Calculates attack frequency in last 60 seconds
-- Automatically adjusts DEFCON level and alert threshold
-- Risk levels are upgraded in high-alert modes
+### Usage
 
-**API**: `GET /api/defcon-status` - Returns current DEFCON level and status
+**Full Audit**:
 
----
+```python
+POST /api/smart-guard/audit
+{
+  "code": "#include <iostream>\n...",
+  "language": "english"
+}
+```
 
-## 🛡️ Active Defense
+**Quick Audit**:
 
-For CRITICAL risk events, the system simulates active defense actions:
+```python
+POST /api/smart-guard/quick-audit
+{
+  "code": "#include <iostream>\n...",
+  "language": "english"
+}
+```
 
-**Simulated Actions**:
+### Dependencies
 
-- `FIREWALL_BLOCK` - Block command sent to network nodes
-- Status: `SENT_TO_NODE`
-- Mitigation steps logged
-- Ready for real Layer 1 integration
+SmartGuard requires:
 
-**When Triggered**:
+- `langgraph>=0.1.0`
+- `langchain>=0.2.0`
+- `langchain-groq>=0.1.0`
+- `groq>=0.10.0`
 
-- Risk level = CRITICAL
-- Automatic for all CRITICAL events
-- Included in automation payloads
-
-**Future**: Ready for real Qubic node integration for actual transaction blocking.
-
----
-
-## 💭 Sentiment Analysis
-
-The system correlates on-chain activity with social sentiment:
-
-**Features**:
-
-- Sentiment score: -1.0 (bearish) to +1.0 (bullish)
-- Social mentions: Twitter, Discord, Reddit
-- Correlation analysis: CONFIRMED, PARTIAL, DIVERGENT, UNCERTAIN
-
-**Current Status**: Mocked for demo, structure ready for real API integration
-
-**Integration Ready**: Twitter API, Discord API, Reddit API
+If these are not installed, AEGIS continues to function normally, but SmartGuard endpoints will return 503.
 
 ---
 
-## 📊 Market Intelligence (V2)
-
-### Token Tracking
-
-Tracks all tokens mentioned in transactions:
-
-- Risk scores per token
-- 24h statistics (alerts, average risk)
-- Trend analysis (UP/DOWN/STABLE)
-- Liquidity tags and risk labels
-
-### Trading Signals
-
-Automatic signal generation:
-
-- **WHALE_DUMP_RISK**: Large sell orders detected
-- **VOLUME_SPIKE**: Unusual volume increase
-- **SUSPICIOUS_CLUSTER**: Coordinated activity patterns
-
-**Signal Criteria**: HIGH/CRITICAL risk events automatically generate signals
-
-### Token Distribution (Mock Data)
-
-- **30%** QXALPHA (demo token)
-- **25%** QX
-- **15%** Other tokens (CFB, QTRY)
-- **30%** No token (simple QUBIC transfers)
-
----
-
-## 🧪 Testing
+## Testing
 
 ### Quick Test
 
@@ -464,25 +563,28 @@ This script tests:
 4. Verify WebSocket connection (badge should show "ONLINE")
 5. Test all pages and features
 
+### Testing SmartGuard
+
+```bash
+# Test SmartGuard audit
+curl -X POST http://localhost:8000/api/smart-guard/audit \
+  -H "Content-Type: application/json" \
+  -d '{
+    "code": "#include <iostream>\nint main() { return 0; }",
+    "language": "english"
+  }'
+```
+
 ---
 
-## 📈 API Documentation
-
-Interactive API documentation available at:
-
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
-
----
-
-## 🔧 Development
+## Development
 
 ### Project Structure
 
 - **Agents**: Modular AI agents for different tasks
 - **Core**: Core AI brain and intelligence engine
 - **Models**: Pydantic models for type safety
-- **Services**: Business logic (mock generation, market intel, etc.)
+- **Services**: Business logic (mock generation, market intel, SmartGuard)
 - **API**: FastAPI routes and WebSocket handlers
 
 ### Adding New Features
@@ -501,7 +603,7 @@ Interactive API documentation available at:
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 ### Production Considerations
 
@@ -510,6 +612,7 @@ Interactive API documentation available at:
 3. **Rate Limiting**: Add rate limiting for API endpoints
 4. **Monitoring**: Add logging and monitoring
 5. **Database**: Consider persistent storage for production
+6. **WebSocket**: Configure proper WebSocket proxy (nginx, etc.)
 
 ### Docker (Optional)
 
@@ -522,40 +625,22 @@ COPY . .
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
----
+### Nginx Configuration (WebSocket)
 
-## 🎯 Features for Hackathon Demo
-
-### Highlight These Features
-
-1. **Real AI**: Groq Llama-3.3 (not fake, real intelligence)
-2. **Adaptive System**: DEFCON mode (auto-adjusts to threats)
-3. **Proactive Defense**: Active Defense simulation (Layer 1 ready)
-4. **Complete Solution**: Security + Trading Intelligence
-5. **Production-Ready**: Clean architecture, extensible
-6. **Innovative**: Sentiment Analysis + XAI + Predictions
-
-### Demo Flow
-
-1. Show Dashboard with live transactions
-2. Highlight DEFCON adaptation
-3. Demonstrate Market Intelligence
-4. Show AI Chat capabilities
-5. Trigger Active Defense → Discord notification
-6. Explain Layer 1 readiness
+```nginx
+location /ws/ {
+    proxy_pass http://backend:8000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+}
+```
 
 ---
 
-## 📚 Additional Resources
-
-- **Frontend**: See `../frontend/README.md`
-- **Testing Guide**: See `TESTING_GUIDE_COMPLETE.md`
-- **Groq Setup**: Run `python check_groq_setup.py`
-- **API Testing**: See `TEST_APIS_POWERSHELL.md` (if exists)
-
----
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Groq Not Working
 
@@ -584,9 +669,52 @@ python check_groq_setup.py
 - Check that transactions include `token_symbol`
 - Test endpoint: `curl http://localhost:8000/api/market-intel/overview`
 
+### SmartGuard Not Available
+
+If SmartGuard endpoints return 503:
+
+1. Check if LangGraph dependencies are installed:
+   ```bash
+   pip install langgraph langchain langchain-groq
+   ```
+2. Verify Groq API key is configured
+3. Check backend logs for detailed error messages
+
 ---
 
-## 📝 Version History
+## Performance
+
+### Optimization Tips
+
+- **Groq API**: Fast inference (~200ms per request)
+- **Caching**: Consider caching frequent queries
+- **WebSocket**: Efficient real-time streaming
+- **Lazy Loading**: SmartGuard uses lazy loading to avoid startup delays
+
+### Monitoring
+
+Monitor these metrics:
+
+- API response times
+- WebSocket connection count
+- Groq API usage and rate limits
+- Memory usage (especially for graph operations)
+
+---
+
+## Security
+
+### Best Practices
+
+1. **API Keys**: Never commit `.env` files
+2. **CORS**: Restrict in production
+3. **Rate Limiting**: Implement for all endpoints
+4. **Input Validation**: All inputs validated via Pydantic
+5. **Error Handling**: No sensitive data in error messages
+
+---
+
+## Version History
 
 ### v2.1 (Current)
 
@@ -596,6 +724,8 @@ python check_groq_setup.py
 - ✅ Sentiment Analysis - Social correlation
 - ✅ Enhanced AI prompts - More context and intelligence
 - ✅ Improved error handling - Robust Groq integration
+- ✅ SmartGuard Core Integration - Pre-deployment contract auditing
+- ✅ Production-ready code cleanup
 
 ### v2.0
 
@@ -607,23 +737,25 @@ python check_groq_setup.py
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 This is a hackathon project, but contributions welcome!
 
 ---
 
-## 📄 License
+## License
 
 MIT License - Hackathon Project
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Groq** for ultra-fast AI inference
 - **Qubic** for the amazing blockchain
 - **FastAPI** for the excellent framework
+- **LangGraph** for multi-agent orchestration
+- **LangChain** for LLM integration
 
 ---
 

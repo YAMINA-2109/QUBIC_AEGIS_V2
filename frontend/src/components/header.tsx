@@ -89,7 +89,7 @@ export function Header({
           className={cn(
             "px-3 py-1 border",
             isUnderAttack
-              ? "bg-red-500/20 text-red-500 border-red-500 animate-pulse"
+              ? "bg-red-500/20 text-red-500 border-red-500 gentle-pulse"
               : isConnected
               ? "bg-primary text-primary-foreground border-primary"
               : "bg-gray-500 text-gray-300 border-gray-500"
@@ -99,14 +99,14 @@ export function Header({
             className={cn(
               "mr-2 inline-block h-2 w-2 rounded-full",
               isUnderAttack
-                ? "bg-red-500 animate-pulse"
+                ? "bg-red-500 gentle-pulse"
                 : isConnected
-                ? "bg-primary-foreground animate-pulse"
+                ? "bg-primary-foreground gentle-pulse"
                 : "bg-red-500"
             )}
           />
           {isUnderAttack
-            ? "⚠ UNDER ATTACK"
+            ? "UNDER ATTACK"
             : isConnected
             ? "ONLINE"
             : "OFFLINE"}

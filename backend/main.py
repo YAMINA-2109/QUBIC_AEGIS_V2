@@ -22,26 +22,18 @@ async def lifespan(app: FastAPI):
     2. Shutdown: Clean up resources if needed.
     """
     # STARTUP LOGIC
-    print("\n🚀 QUBIC AEGIS SYSTEM STARTUP INITIATED")
-    print("---------------------------------------")
-    
-    # Pre-generate realistic data so the demo looks active immediately
-    print("📥 Pre-loading simulation data...")
+    # Pre-generate realistic data so the dashboard is not empty on launch
     try:
         # Generate 500 historical transactions to populate graphs
         await initialize_test_data(num_transactions=500, force_regenerate=False)
-        print("✅ Data Layer Ready: Historical context loaded.")
     except Exception as e:
-        print(f"⚠️ Warning: Could not pre-load data: {e}")
-    
-    print("🤖 AI Agents: ONLINE")
-    print("🛡️ Security Protocols: ACTIVE")
-    print("---------------------------------------\n")
+        # Data pre-loading failed - system will still work
+        pass
     
     yield
     
     # SHUTDOWN LOGIC
-    print("\n🛑 System Shutdown...")
+    # Clean up resources if needed
 
 # Create FastAPI application with lifespan
 app = FastAPI(

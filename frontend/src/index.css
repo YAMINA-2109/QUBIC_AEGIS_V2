@@ -45,25 +45,41 @@
     @apply bg-[#050505] text-foreground;
     margin: 0;
     min-height: 100vh;
-    font-family: 'Courier New', monospace;
+    font-family: "Courier New", monospace;
   }
 }
 
 @keyframes glow {
-  0%, 100% {
-    text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green);
+  0%,
+  100% {
+    text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green),
+      0 0 30px var(--neon-green);
   }
   50% {
-    text-shadow: 0 0 15px var(--neon-green), 0 0 30px var(--neon-green), 0 0 45px var(--neon-green);
+    text-shadow: 0 0 15px var(--neon-green), 0 0 30px var(--neon-green),
+      0 0 45px var(--neon-green);
   }
 }
 
 @keyframes glow-red {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red);
   }
   50% {
     box-shadow: 0 0 30px var(--neon-red), 0 0 60px var(--neon-red);
+  }
+}
+
+@keyframes gentle-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    border-color: rgb(239 68 68);
+  }
+  50% {
+    opacity: 0.6;
+    border-color: rgb(185 28 28);
   }
 }
 
@@ -73,4 +89,8 @@
 
 .cyber-glow-red {
   animation: glow-red 1.5s ease-in-out infinite;
+}
+
+.gentle-pulse {
+  animation: gentle-pulse 3s ease-in-out infinite;
 }

@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import { Activity, BarChart3, Zap, Search, Shield } from "lucide-react"
+import { Activity, BarChart3, Zap, Search, Shield, Code } from "lucide-react"
 import { cn } from "../lib/utils"
 
 const navigation = [
@@ -7,6 +7,7 @@ const navigation = [
   { name: "Market Intel", icon: BarChart3, path: "/market-intel" },
   { name: "War Room", icon: Zap, path: "/war-room" },
   { name: "Neural Search", icon: Search, path: "/neural-search" },
+  { name: "SmartGuard", icon: Code, path: "/smart-guard" },
 ]
 
 export function Sidebar() {

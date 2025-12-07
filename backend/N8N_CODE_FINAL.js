@@ -1,13 +1,5 @@
-// ==========================================
-// CODE N8N FINAL - À UTILISER DANS VOTRE WORKFLOW
-// ==========================================
-// Ce code fonctionne pour les alertes automatiques ET les boutons
-// Car maintenant les deux envoient la même structure
-
 const inputData = $input.item.json;
 
-// Les données sont maintenant directement au niveau racine (comme les alertes automatiques)
-// Plus besoin de lire depuis "body", on lit directement
 const riskScore = inputData.risk_score || inputData.body?.risk_score || 0;
 const attackType = inputData.type || inputData.body?.type || "Unknown Type";
 const analysis =
@@ -15,7 +7,6 @@ const analysis =
   inputData.body?.analysis ||
   "No detailed analysis provided.";
 
-// Créer l'embed Discord
 const embed = {
   title: `⚠️ ${attackType}`,
   color: riskScore >= 95 ? 15548997 : riskScore >= 80 ? 16753920 : 3447003,

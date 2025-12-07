@@ -1,5 +1,5 @@
 """
-originnAPI Routes for QUBIC AEGIS (Expert Edition - FINAL)
+API Routes for QUBIC AEGIS (Expert Edition - FINAL)
 Integrates Multi-Agent Orchestrator, Market Intelligence, and n8n Automation.
 """
 import json
@@ -42,7 +42,7 @@ class ConnectionManager:
             self.active_connections.remove(websocket)
     
     async def broadcast(self, message: dict):
-        # Copie la liste pour éviter les erreurs de modification pendant l'itération
+        # Copy list to avoid modification errors during iteration
         for connection in list(self.active_connections):
             try:
                 await connection.send_json(message)
@@ -54,7 +54,6 @@ stream_task = None
 
 # --- BACKGROUND STREAMING TASK ---
 async def stream_transactions():
-    print("🟢 Starting Aegis Neural Stream...")
     try:
         async for transaction in data_stream.stream():
             try:
@@ -107,10 +106,12 @@ async def stream_transactions():
                 
                 await manager.broadcast(message)
             except Exception as e:
-                print(f"⚠️ Stream Error (Skipping tx): {e}")
+                # Stream error - skip this transaction
+                pass
                 
     except Exception as e:
-        print(f"❌ Critical Stream Error: {e}")
+        # Critical stream error
+        pass
 
 @router.websocket("/ws/monitor")
 async def websocket_monitor(websocket: WebSocket):
@@ -120,7 +121,7 @@ async def websocket_monitor(websocket: WebSocket):
     # Send connection confirmation
     await websocket.send_json({
         "type": "connection",
-        "message": "🟢 Connected to QUBIC AEGIS monitoring stream"
+        "message": " Connected to QUBIC AEGIS monitoring stream"
     })
     
     if stream_task is None or stream_task.done():
@@ -147,13 +148,7 @@ async def trigger_automation(request: WebhookRequest):
     GENERATES FULL AI ANALYSIS for Discord messages.
     """
     try:
-        # DEBUG: Log ce qui est reçu depuis le frontend
-        print(f"📥 Received from frontend:")
-        print(f"  - scenario_type: {request.scenario_type}")
-        print(f"  - webhook_url: {request.webhook_url}")
-        print(f"  - message: {request.message}")
-        
-        # 1. Sélection du scénario avec ANALYSES IA COMPLÈTES
+        # 1. Select scenario with COMPLETE AI ANALYSIS
         scenarios_map = {
             "WHALE": {
                 "type": "WHALE_DUMP", 
@@ -181,71 +176,49 @@ Flash loan attack pattern detected: Large liquidity withdrawal followed by immed
             }
         }
 
-        # Fallback si le type n'est pas reconnu
+        # Fallback if type is not recognized
         scenario = scenarios_map.get(request.scenario_type, scenarios_map["WHALE"])
         
-        # DEBUG: Vérifier quel scénario a été sélectionné
-        print(f"✅ Selected scenario: {request.scenario_type} -> {scenario['type']} (risk: {scenario['risk']})")
-        
-        # 2. Construction du Payload COMPLET (EXACTEMENT ce que n8n attend)
-        # Structure: { "body": { ... } } pour que n8n puisse lire $input.item.json.body
-        # L'analyse est nettoyée (sans \n multiples) pour Discord, mais on garde les sauts de ligne simples
+        # 2. Build COMPLETE Payload (EXACTLY what n8n expects)
+        # Analysis is cleaned (no multiple \n) for Discord, but keep single line breaks
         analysis_text = scenario["full_analysis"].strip()
-        # Remplacer les doubles sauts de ligne par un seul, mais garder la structure lisible
+        # Replace double line breaks with single, but keep readable structure
         analysis_text = "\n".join(line.strip() for line in analysis_text.split("\n") if line.strip())
         
-        # Construction du payload - IDENTIQUE aux alertes automatiques
-        # Les alertes automatiques envoient directement (sans wrapper "body")
-        # On fait pareil pour que le workflow n8n fonctionne de la même façon
+        # Build payload - IDENTICAL to automatic alerts
+        # Automatic alerts send directly (without "body" wrapper)
+        # Do the same so n8n workflow works the same way
         n8n_payload = {
             "risk_score": int(scenario["risk"]),  # INTEGER (92, 99, 95)
             "type": str(scenario["type"]),       # STRING (WHALE_DUMP, RUG_PULL_INITIATED, FLASH_LOAN_ATTACK)
-            "analysis": analysis_text,  # Analyse IA COMPLÈTE
+            "analysis": analysis_text,  # Complete AI Analysis
             "timestamp": datetime.utcnow().isoformat(),
             "severity": "CRITICAL" if scenario["risk"] >= 90 else "HIGH"
         }
         
-        # Vérification que tous les champs sont bien présents
-        assert "risk_score" in n8n_payload, "risk_score manquant!"
-        assert "type" in n8n_payload, "type manquant!"
-        assert "analysis" in n8n_payload and len(n8n_payload["analysis"]) > 0, "analysis manquante ou vide!"
+        # Verify all fields are present
+        assert "risk_score" in n8n_payload, "risk_score missing!"
+        assert "type" in n8n_payload, "type missing!"
+        assert "analysis" in n8n_payload and len(n8n_payload["analysis"]) > 0, "analysis missing or empty!"
         
-        # 3. Envoi (Avec logs détaillés pour debug)
-        payload_str = json.dumps(n8n_payload, indent=2, ensure_ascii=False)
-        print(f"🚀 Sending to n8n:")
-        print(payload_str)
-        print(f"📊 Payload size: {len(payload_str)} bytes")
-        print(f"📊 Analysis length: {len(analysis_text)} chars")
-        
-        # Utilise l'URL du frontend s'il y en a une, sinon celle par défaut du .env
+        # 3. Send to n8n
+        # Use frontend URL if provided, otherwise default from .env
         target_url = request.webhook_url or settings.N8N_WEBHOOK_URL
         
-        print(f"🌐 Target URL: {target_url}")
-        
         if not target_url:
-            print("⚠️ WARNING: No webhook URL configured! Set N8N_WEBHOOK_URL in .env")
             return {"status": "error", "message": "No webhook URL configured"}
         
-        # Envoyer avec headers explicites
+        # Send with explicit headers
         headers = {
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
         
         response = requests.post(target_url, json=n8n_payload, headers=headers, timeout=10)
-        print(f"✅ n8n Response: {response.status_code} - {response.text[:200]}")
-        
-        # Vérifier si la réponse contient des erreurs
-        if response.status_code != 200:
-            print(f"❌ ERROR: n8n returned {response.status_code}")
-            print(f"Response body: {response.text}")
         
         return {"status": "success", "scenario": scenario["type"], "n8n_code": response.status_code}
         
     except Exception as e:
-        print(f"❌ Automation Error: {e}")
-        import traceback
-        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 # Market Intelligence Endpoints
@@ -280,7 +253,7 @@ async def get_wallet_graph(max_nodes: int = 50):
 async def analyze_wallet(wallet_id: str):
     return {
         "wallet_id": wallet_id,
-        "risk_score": random.randint(10, 90), # Mock pour la démo si wallet inconnu
+        "risk_score": random.randint(10, 90),  # Mock for demo if wallet unknown
         "features": multi_agent._get_wallet_insights(wallet_id)
     }
 
@@ -304,7 +277,7 @@ async def ask_aegis(req: ChatRequest):
         "confidence": 0.95
     }
 
-# DEFCON Endpoint (Le manquant !)
+# DEFCON Endpoint
 @router.get("/api/defcon-status")
 async def get_defcon_status():
     return multi_agent.adjust_sensitivity()
@@ -317,3 +290,80 @@ def health():
 @router.get("/api/network-emotion")
 async def get_network_emotion():
     return multi_agent.market_intel.get_network_emotion()
+
+# =============================================================================
+# SMARTGUARD ROUTES - C++ Contract Auditing (Integrated from SmartGuard)
+# =============================================================================
+
+# Import SmartGuard service (lazy import to avoid breaking if SmartGuard not available)
+SMARTGUARD_AVAILABLE = False
+SMARTGUARD_ERROR = None
+try:
+    from app.services.smart_guard import get_smart_guard_service
+    SMARTGUARD_AVAILABLE = True
+except ImportError as e:
+    SMARTGUARD_AVAILABLE = False
+    SMARTGUARD_ERROR = str(e)
+    # SmartGuard not available - system will continue without it
+    pass
+except Exception as e:
+    SMARTGUARD_AVAILABLE = False
+    SMARTGUARD_ERROR = str(e)
+    # SmartGuard not available - system will continue without it
+    pass
+
+class AuditRequest(BaseModel):
+    code: str
+    language: Optional[str] = "english"
+    simulation_scenario: Optional[str] = None
+
+class QuickAuditRequest(BaseModel):
+    code: str
+    language: Optional[str] = "english"
+
+@router.post("/api/smart-guard/audit")
+async def smart_guard_audit(request: AuditRequest):
+    """
+    Complete SmartGuard audit pipeline (8 steps).
+    Returns full audit report including comments, security analysis, documentation, etc.
+    """
+    if not SMARTGUARD_AVAILABLE:
+        error_msg = f"SmartGuard service not available. Please install langgraph dependencies. Error: {SMARTGUARD_ERROR or 'Unknown error'}"
+        raise HTTPException(
+            status_code=503,
+            detail=error_msg
+        )
+    
+    try:
+        service = get_smart_guard_service()
+        result = await service.audit_contract(
+            code=request.code,
+            language=request.language or "english",
+            simulation_scenario=request.simulation_scenario
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Audit failed: {str(e)}")
+
+@router.post("/api/smart-guard/quick-audit")
+async def smart_guard_quick_audit(request: QuickAuditRequest):
+    """
+    Quick security audit (semantic analysis + security audit only).
+    Faster than full audit for quick security checks.
+    """
+    if not SMARTGUARD_AVAILABLE:
+        error_msg = f"SmartGuard service not available. Please install langgraph dependencies. Error: {SMARTGUARD_ERROR or 'Unknown error'}"
+        raise HTTPException(
+            status_code=503,
+            detail=error_msg
+        )
+    
+    try:
+        service = get_smart_guard_service()
+        result = await service.quick_audit(
+            code=request.code,
+            language=request.language or "english"
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Quick audit failed: {str(e)}")
