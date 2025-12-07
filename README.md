@@ -693,7 +693,7 @@ Proprietary – Usage is restricted to Qubic Aegis Team and Qubic Foundation.
 
 ## Team
 
-- **[Atmaoui Yamina](https://www.linkedin.com/in/yamina-atmaoui/)**
+- **[Atmaoui Yamina](https://www.linkedin.com/in/atmaoui-yamina-4988a3220/)**
 - **[Brenda Tidjet](https://www.linkedin.com/in/brenda-tidjet/)**
 - **[Khireddine Tidjet](https://www.linkedin.com/in/khireddine-tidjet/)**
 - **[Ahmed Yassin](https://www.linkedin.com/in/ahmed-yassin-052209374/)**
