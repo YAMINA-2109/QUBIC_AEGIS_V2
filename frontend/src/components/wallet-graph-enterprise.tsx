@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import ForceGraph2D from "react-force-graph-2d";
 import { Button } from "./ui/button";
-import { ZoomIn, ZoomOut, RotateCcw, Filter } from "lucide-react";
+import { ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { apiUrl } from "../lib/api";
 
 interface Node {
@@ -132,7 +132,6 @@ export function WalletGraphEnterprise({ maxNodes = 50 }: WalletGraphProps) {
   }>(INITIAL_DEMO_DATA);
 
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [zoom, setZoom] = useState(1);
   const [filterRisk, setFilterRisk] = useState<string>("all"); // all, high, normal
 
   useEffect(() => {
@@ -226,21 +225,18 @@ export function WalletGraphEnterprise({ maxNodes = 50 }: WalletGraphProps) {
   const handleZoomIn = useCallback(() => {
     if (fgRef.current) {
       fgRef.current.zoom(1.5, 1000);
-      setZoom((z) => z * 1.5);
     }
   }, []);
 
   const handleZoomOut = useCallback(() => {
     if (fgRef.current) {
       fgRef.current.zoom(0.67, 1000);
-      setZoom((z) => z * 0.67);
     }
   }, []);
 
   const handleReset = useCallback(() => {
     if (fgRef.current) {
       fgRef.current.zoomToFit(400);
-      setZoom(1);
       setSelectedNode(null);
     }
   }, []);
@@ -430,7 +426,6 @@ export function WalletGraphEnterprise({ maxNodes = 50 }: WalletGraphProps) {
             nodeRelSize={10}
             cooldownTicks={150}
             backgroundColor="transparent"
-            linkOpacity={0.6}
             d3VelocityDecay={0.3}
             d3AlphaDecay={0.02}
           />

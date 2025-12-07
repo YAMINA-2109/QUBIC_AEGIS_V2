@@ -7,9 +7,12 @@ interface SentimentGaugeProps {
   className?: string;
 }
 
-export function SentimentGauge({ sentimentScore = 50, className }: SentimentGaugeProps) {
+export function SentimentGauge({
+  sentimentScore = 50,
+  className,
+}: SentimentGaugeProps) {
   const [animatedScore, setAnimatedScore] = useState(sentimentScore);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<number | null>(null);
   const startScoreRef = useRef(sentimentScore);
 
   useEffect(() => {
@@ -34,7 +37,7 @@ export function SentimentGauge({ sentimentScore = 50, className }: SentimentGaug
     const stepTime = duration / steps;
     let currentStep = 0;
 
-    intervalRef.current = setInterval(() => {
+    intervalRef.current = window.setInterval(() => {
       currentStep++;
       const progress = currentStep / steps;
       // Easing function for smooth animation
@@ -104,7 +107,13 @@ export function SentimentGauge({ sentimentScore = 50, className }: SentimentGaug
             >
               {/* Background arc */}
               <defs>
-                <linearGradient id="sentimentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <linearGradient
+                  id="sentimentGradient"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
                   <stop offset="0%" stopColor="#ef4444" stopOpacity="0.8" />
                   <stop offset="50%" stopColor="#eab308" stopOpacity="0.8" />
                   <stop offset="100%" stopColor="#22c55e" stopOpacity="0.8" />
@@ -203,4 +212,3 @@ export function SentimentGauge({ sentimentScore = 50, className }: SentimentGaug
     </Card>
   );
 }
-

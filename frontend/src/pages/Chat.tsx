@@ -17,7 +17,6 @@ import {
   BarChart3,
 } from "lucide-react";
 import { WalletGraph } from "../components/wallet-graph";
-import { cn } from "../lib/utils";
 
 interface Message {
   id: string;

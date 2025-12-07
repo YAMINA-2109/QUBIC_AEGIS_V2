@@ -221,7 +221,7 @@ export function WalletGraph({ maxNodes = 50 }: WalletGraphProps) {
               return "#166534";
             }}
             linkColor={() => "rgba(128, 128, 128, 0.2)"}
-            linkWidth={(link: GraphLink) => 1}
+            linkWidth={() => 1}
             nodeCanvasObject={() => {
               // Ne pas afficher les labels par défaut (cachés)
             }}

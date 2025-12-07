@@ -3,25 +3,27 @@ import { X } from "lucide-react";
 import { cn } from "../lib/utils";
 
 interface RiskAnalysis {
-  transaction?: {
-    source_id?: string;
-    dest_id?: string;
-    amount?: number;
-    tick?: number;
-    type?: string;
-    timestamp?: string | null;
-    token_symbol?: string;
-    source?: "RPC" | "SIMULATION";
-  } | {
-    source_id: string;
-    dest_id: string;
-    amount: number;
-    tick: number;
-    type: string;
-    timestamp: string | null;
-    token_symbol?: string;
-    source?: "RPC" | "SIMULATION";
-  };
+  transaction?:
+    | {
+        source_id?: string;
+        dest_id?: string;
+        amount?: number;
+        tick?: number;
+        type?: string;
+        timestamp?: string | null;
+        token_symbol?: string;
+        source?: "RPC" | "SIMULATION";
+      }
+    | {
+        source_id: string;
+        dest_id: string;
+        amount: number;
+        tick: number;
+        type: string;
+        timestamp: string | null;
+        token_symbol?: string;
+        source?: "RPC" | "SIMULATION";
+      };
   risk_score?: number;
   risk_level?: string;
   explanation?: string;
@@ -48,7 +50,11 @@ interface AnalysisModalProps {
   analysis: RiskAnalysis | null;
 }
 
-export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps) {
+export function AnalysisModal({
+  isOpen,
+  onClose,
+  analysis,
+}: AnalysisModalProps) {
   const [displayedText, setDisplayedText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
@@ -88,7 +94,6 @@ export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps)
 
   const riskLevel = analysis.risk_level || "UNKNOWN";
   const riskScore = analysis.risk_score ?? 0;
-  const attackType = analysis.attack_type || analysis.transaction?.type || "NORMAL";
 
   // Generate risk factors if not present
   const riskFactors = analysis.risk_factors || generateRiskFactors(analysis);
@@ -103,7 +108,7 @@ export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps)
     >
       {/* Backdrop with blur */}
       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
-      
+
       {/* Modal Content */}
       <div
         className="relative z-10 w-full max-w-3xl mx-4 max-h-[90vh] overflow-auto rounded-lg border-2 border-[#00ff41] bg-[#050505] shadow-[0_0_30px_rgba(0,255,65,0.3)]"
@@ -143,12 +148,15 @@ export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps)
                 <div>
                   <span className="text-gray-500">Amount:</span>{" "}
                   <span className="text-foreground font-bold">
-                    {(analysis.transaction.amount || 0).toLocaleString()} {analysis.transaction.token_symbol || "QUBIC"}
+                    {(analysis.transaction.amount || 0).toLocaleString()}{" "}
+                    {analysis.transaction.token_symbol || "QUBIC"}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-500">Tick:</span>{" "}
-                  <span className="text-[#00ff41]">#{analysis.transaction.tick || "N/A"}</span>
+                  <span className="text-[#00ff41]">
+                    #{analysis.transaction.tick || "N/A"}
+                  </span>
                 </div>
               </div>
             </div>
@@ -246,9 +254,14 @@ export function AnalysisModal({ isOpen, onClose, analysis }: AnalysisModalProps)
           {/* Prediction */}
           {analysis.prediction && (
             <div className="border border-gray-800 bg-black/40 p-4 rounded font-mono text-xs">
-              <div className="text-gray-500 uppercase mb-2">Future Prediction</div>
+              <div className="text-gray-500 uppercase mb-2">
+                Future Prediction
+              </div>
               <div className="text-foreground">
-                Trend: <span className="text-[#00ff41]">{analysis.prediction.trend || "UNKNOWN"}</span>
+                Trend:{" "}
+                <span className="text-[#00ff41]">
+                  {analysis.prediction.trend || "UNKNOWN"}
+                </span>
               </div>
               {analysis.prediction.predicted_risk && (
                 <div className="text-foreground mt-1">
@@ -335,4 +348,3 @@ function getRecommendation(riskLevel: string, riskScore: number): string {
     return "ALLOW & LOG";
   }
 }
-

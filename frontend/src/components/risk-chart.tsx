@@ -81,8 +81,7 @@ export function RiskChart({ data }: RiskChartProps) {
           </CardTitle>
           {prediction && (
             <div className="text-xs text-muted-foreground">
-              Predicted: {prediction.predicted_risk.toFixed(1)} (Confidence:{" "}
-              {prediction.confidence?.toFixed(0) || 0}%)
+              Predicted: {prediction.predicted_risk.toFixed(1)}
             </div>
           )}
         </div>

@@ -8,7 +8,6 @@ import { WarRoom } from "./pages/WarRoom";
 import { NeuralSearch } from "./pages/NeuralSearch";
 import { SmartGuard } from "./pages/SmartGuard";
 import { Toaster } from "sonner";
-import { ErrorBoundary } from "./components/ErrorBoundary";
 import {
   ConnectionProvider,
   useConnection,

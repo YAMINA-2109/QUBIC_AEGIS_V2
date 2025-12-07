@@ -12,13 +12,10 @@ import {
   Minus,
   AlertCircle,
   Activity,
-  Filter,
   Search,
-  Download,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { Input } from "../components/ui/input";
-import { Button } from "../components/ui/button";
 import { SentimentGauge } from "../components/sentiment-gauge";
 import { apiUrl } from "../lib/api";
 
