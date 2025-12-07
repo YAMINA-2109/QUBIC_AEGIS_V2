@@ -689,7 +689,13 @@ The six-agent cognitive architecture ensures extensibility. The adaptive DEFCON 
 
 ## License
 
-Proprietary – Usage is restricted to Qubic Aegis Team and Qubic Foundation.
+MIT License — see LICENSE file.
+
+This project was created specifically for the Qubic ecosystem.  
+While the source code is open under MIT terms, the intended usage,
+design direction, and long-term development are aligned with Qubic’s
+infrastructure and community.
+
 
 ## Team
 
