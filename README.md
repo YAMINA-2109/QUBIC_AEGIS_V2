@@ -349,8 +349,8 @@ AEGIS operates on a **hybrid data architecture** combining real Qubic network da
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/qubic-aegis.git
-cd qubic-aegis/backend
+git clone https://github.com/YAMINA-2109/QUBIC_AEGIS_V2.git
+cd QUBIC_AEGIS_V2/backend
 
 # Create virtual environment
 python -m venv .venv
