@@ -125,7 +125,7 @@ const INITIAL_DEMO_DATA = {
 };
 
 export function WalletGraphEnterprise({ maxNodes = 50 }: WalletGraphProps) {
-  const fgRef = useRef<any>();
+  const fgRef = useRef<any>(null);
   const [graphData, setGraphData] = useState<{
     nodes: GraphNode[];
     links: GraphLink[];
