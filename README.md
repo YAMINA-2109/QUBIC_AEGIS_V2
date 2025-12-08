@@ -674,6 +674,43 @@ Follow installation instructions above. Backend runs on port 8000, frontend on p
 All limitations have documented solutions and clear implementation paths for production deployment.
 
 ---
+## **🧩 Sustainability & Business Model**
+
+QUBIC AEGIS is designed as a long-term, modular intelligence layer for the Qubic ecosystem.
+
+Its sustainability relies on three revenue paths:
+
+- **1️⃣ Aegis Pro – Premium Features for Traders & Institutions**
+
+Advanced analytics, predictive forecasting, market intelligence, SmartGuard reasoning, and automated actions via EasyConnect.
+Subscription model (monthly or annual).
+
+- **2️⃣ Aegis Protocol API – B2B Integration for Qubic Projects**
+
+Protocols can integrate Aegis risk scoring, anomaly detection, alerts, and forecasting directly into their dApps.
+Usage-based pricing (API calls or flat monthly fee).
+
+- **3️⃣ Ecosystem Partnerships – Launchpad & Security Operations**
+
+Aegis becomes a core intelligence plugin for Nostromo projects, helping them monitor token launches, liquidity risks, and community signals.
+Revenue-sharing or licensing model.
+
+**🔥 Why it’s sustainable**
+
+Because every new token, dApp, and protocol built on Qubic needs:
+
+security
+
+intelligence
+
+real-time market insights
+
+automation
+
+trust & transparency
+
+Aegis grows automatically with the ecosystem.
+---
 
 ## Conclusion
 
