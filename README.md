@@ -699,15 +699,15 @@ Revenue-sharing or licensing model.
 
 Because every new token, dApp, and protocol built on Qubic needs:
 
-security
+- security
 
-intelligence
+- intelligence
 
-real-time market insights
+- real-time market insights
 
-automation
+- automation
 
-trust & transparency
+- trust & transparency
 
 Aegis grows automatically with the ecosystem.
 ---
